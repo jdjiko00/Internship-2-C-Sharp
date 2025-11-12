@@ -72,6 +72,114 @@ namespace Internship_2_C_Sharp
                   )
                 }
             };
+
+            void newUser()
+            {
+                Console.WriteLine("Dodavanje novog korisnika");
+            }
+
+            void deleteUser()
+            {
+                Console.WriteLine("Brisanje korisnika");
+            }
+
+            void editUser()
+            {
+                Console.WriteLine("Uredivanje korisnika");
+            }
+
+            void showUsers()
+            {
+                Console.WriteLine("Pregled korisnika");
+            }
+
+            void userApp()
+            {
+                Console.WriteLine("");
+                bool userAppFinished = false;
+                do
+                {
+                    Console.WriteLine("1 - Unos novog korisnika");
+                    Console.WriteLine("2 - Brisanje korisnika");
+                    Console.WriteLine("3 - Uređivanje korisnika");
+                    Console.WriteLine("4 - Pregled svih korisnika");
+                    Console.WriteLine("0 - Povratak na glavni izbornik");
+                    Console.Write("\nOdabir: ");
+                    if (int.TryParse(Console.ReadLine(), out int userChoice))
+                    {
+                        switch (userChoice)
+                        {
+                            case 1:
+                                newUser();
+                                break;
+                            case 2:
+                                deleteUser();
+                                break;
+                            case 3:
+                                editUser();
+                                break;
+                            case 4:
+                                showUsers();
+                                break;
+                            case 0:
+                                Console.WriteLine("Izlazak iz korisnicke aplikacije...");
+                                userAppFinished = true;
+                                break;
+                            default:
+                                Console.WriteLine("Krivi odabir!");
+                                break;
+                        }
+                    }
+                }
+                while (!userAppFinished);
+            }
+
+            void travelApp()
+            {
+                Console.WriteLine("");
+                //do
+                //{
+                    Console.WriteLine("1 - Unos novog putovanja");
+                    Console.WriteLine("2 - Brisanje putovanja");
+                    Console.WriteLine("3 - Uređivanje postojećeg putovanja");
+                    Console.WriteLine("4 - Pregled svih putovanja");
+                    Console.WriteLine("5 - Izvještaji i analize");
+                    Console.WriteLine("0 - Povratak na glavni izbornik");
+                //}
+                //while (true);
+            }
+
+
+            Console.WriteLine("APLIKACIJA ZA EVIDENCIJU GORIVA");
+            bool appFinished = false;
+            do
+            {
+                Console.WriteLine("");
+                Console.WriteLine("1 - Korisnici");
+                Console.WriteLine("2 - Putovanja");
+                Console.WriteLine("0 - Izlaz iz aplikacije");
+                Console.Write("\nOdabir: ");
+                if (int.TryParse(Console.ReadLine(), out int appChoice))
+                {
+                    switch (appChoice)
+                    {
+                        case 1:
+                            userApp();
+                            break;
+                        case 2:
+                            travelApp();
+                            break;
+                        case 0:
+                            Console.WriteLine("Izlazak iz aplikacije...");
+                            appFinished = true;
+                            break;
+                        default:
+                            Console.WriteLine("Krivi odabir!");
+                            break;
+                    }
+                }
+            }
+            while (!appFinished);
         }
     }
 }
