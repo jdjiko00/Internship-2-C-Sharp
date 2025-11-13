@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Globalization;
+using Microsoft.Win32;
 
 namespace Internship_2_C_Sharp
 {
@@ -73,133 +74,6 @@ namespace Internship_2_C_Sharp
                   )
                 }
             };
-
-            /*void newUser(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users)
-            {
-                int numberOfUsers = users.Count;
-                int userID = numberOfUsers + 1;
-
-                Console.Write("Unesite ime: ");
-                string name = Console.ReadLine();
-
-                Console.Write("Unesite prezime: ");
-                string surname = Console.ReadLine();
-
-                DateTime birthDate;
-                while (true)
-                {
-                    Console.Write("Unesite datum rodenja (YYYY-MM-DD): ");
-                    string date = Console.ReadLine();
-                    if (DateTime.TryParseExact(date, "yyyy-MM-dd", null, DateTimeStyles.None, out birthDate))
-                        break;
-                    else
-                        Console.WriteLine("Neispravan format!");
-                }
-
-                Console.Write("Zelite li unijeti putovanje (Y/N): ");
-                char addingTravel = char.Parse(Console.ReadLine());
-                var travel = new Dictionary<int, Tuple<DateTime, double, double, double, double>>();
-
-                if (addingTravel == 'Y')
-                {
-                    int numberOfTravles = 0;
-                    foreach (var user in users)
-                    {
-                        numberOfTravles += user.Value.Item4.Count;
-                    }
-                    int travelID = numberOfTravles + 1;
-
-                    DateTime travelDate;
-                    while (true)
-                    {
-                        Console.Write("Unesite datum rodenja (YYYY-MM-DD): ");
-                        string entryDate = Console.ReadLine();
-                        if (DateTime.TryParseExact(entryDate, "yyyy-MM-dd", null, DateTimeStyles.None, out travelDate))
-                            break;
-                        else
-                            Console.WriteLine("Neispravan format!");
-                    }
-
-                    Console.Write("Unesite kilometrazu: ");
-                    double travelLength = double.Parse(Console.ReadLine());
-
-                    Console.Write("Unesite potroseno gorivo (L): ");
-                    double fuelConsumed = double.Parse(Console.ReadLine());
-
-                    Console.Write("Unesite cijenu po litri: ");
-                    double pricePerLiter = double.Parse(Console.ReadLine());
-
-                    double totalCost = fuelConsumed * pricePerLiter;
-
-                    travel.Add(travelID, new Tuple<DateTime, double, double, double, double>(travelDate, travelLength, fuelConsumed, pricePerLiter, totalCost));
-
-                    users.Add(userID, new Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>(
-                        name, surname, birthDate, travel
-                    ));
-                }
-                else if (addingTravel == 'N')
-                {
-                    users.Add(userID, new Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>(
-                        name, surname, birthDate, travel
-                    ));
-                }
-            }*/
-
-            /*void deleteUser()
-            {
-                Console.WriteLine("Brisanje korisnika");
-            }
-
-            void editUser()
-            {
-                Console.WriteLine("Uredivanje korisnika");
-            }
-
-            void showUsers()
-            {
-                Console.WriteLine("Pregled korisnika");
-            }*/
-
-            /*void userApp(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users)
-            {
-                Console.WriteLine("");
-                bool userAppFinished = false;
-                do
-                {
-                    Console.WriteLine("1 - Unos novog korisnika");
-                    Console.WriteLine("2 - Brisanje korisnika");
-                    Console.WriteLine("3 - Uređivanje korisnika");
-                    Console.WriteLine("4 - Pregled svih korisnika");
-                    Console.WriteLine("0 - Povratak na glavni izbornik");
-                    Console.Write("\nOdabir: ");
-                    if (int.TryParse(Console.ReadLine(), out int userChoice))
-                    {
-                        switch (userChoice)
-                        {
-                            case 1:
-                                newUser(users);
-                                break;
-                            case 2:
-                                deleteUser();
-                                break;
-                            case 3:
-                                editUser();
-                                break;
-                            case 4:
-                                showUsers();
-                                break;
-                            case 0:
-                                Console.WriteLine("Izlazak iz korisnicke aplikacije...");
-                                userAppFinished = true;
-                                break;
-                            default:
-                                Console.WriteLine("Krivi odabir!");
-                                break;
-                        }
-                    }
-                }
-                while (!userAppFinished);
-            }*/
 
             void travelApp()
             {
@@ -275,7 +149,7 @@ namespace Internship_2_C_Sharp
                 if (double.TryParse(entryValue, NumberStyles.Any, CultureInfo.InvariantCulture, out value))
                     break;
                 else
-                    Console.WriteLine("Neispravan unos. Molim unesite broj.");
+                    Console.WriteLine("Neispravan unos. Trebate unijeti broj.");
             }
 
             return value;
@@ -327,7 +201,7 @@ namespace Internship_2_C_Sharp
                             newUser(users);
                             break;
                         case 2:
-                            deleteUser();
+                            deleteUser(users);
                             break;
                         case 3:
                             editUser();
@@ -351,6 +225,14 @@ namespace Internship_2_C_Sharp
             {
                 int numberOfUsers = referenceUsers.Count;
                 int userID = numberOfUsers + 1;
+
+                Console.WriteLine($"ID unosenog elementa prije foreach {userID}");
+                foreach (var user in referenceUsers)
+                {
+                    if (userID == user.Key)
+                        userID++;
+                }
+                Console.WriteLine($"ID unosenog elementa {userID}");
 
                 Console.Write("Unesite ime: ");
                 string name = Console.ReadLine();
@@ -395,9 +277,124 @@ namespace Internship_2_C_Sharp
                     ));
             }
 
-            void deleteUser()
+            void deleteUser(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> referenceUsers)
             {
-                Console.WriteLine("Brisanje korisnika");
+                Console.Write("Unesite ID ili ime korisnika kojeg zelite izbrisati: ");
+                string nameOrID = Console.ReadLine().ToUpper();
+
+                if (int.TryParse(nameOrID, out int ID))
+                {
+                    if (referenceUsers.ContainsKey(ID))
+                    {
+                        var user = referenceUsers[ID];
+                        string name = user.Item1;
+                        string surname = user.Item2;
+
+                        users.Remove(ID);
+
+                        Console.WriteLine($"Izbrisan je korisnik {ID} - {name} - {surname}");
+                    }
+                    else Console.WriteLine("Korisnik ne postoji s tom vrijednosti ID-a!");
+                }
+
+                else if (double.TryParse(nameOrID, out double decimalID))
+                    Console.WriteLine("Korisnik ne postoji s tom vrijednosti ID-a!");
+                    
+                else
+                {
+                    List<int> matchingUser = new List<int>();
+                    int deletedUserID = 0;
+                    bool nameMatches = false;
+
+                    foreach (var user in referenceUsers)
+                    {
+                        string upperName = user.Value.Item1.ToUpper();
+                        string upperSurname = user.Value.Item2.ToUpper();
+
+                        string name = user.Value.Item1;
+                        string surname = user.Value.Item2;
+
+                        if (upperName + ' ' + upperSurname == nameOrID)
+                        {
+                            nameMatches = true;
+                            deletedUserID = user.Key;
+                        }
+
+                        else if (upperName.Contains(nameOrID) || upperSurname.Contains(nameOrID))
+                        {
+                            deletedUserID = user.Key;
+                            matchingUser.Add(deletedUserID);
+                        }
+                    }
+
+                    if (nameMatches)
+                    {
+                        var deletedUser = referenceUsers[deletedUserID];
+                        referenceUsers.Remove(deletedUserID);
+                        string nameOfDeletedUser = deletedUser.Item1;
+                        string surnameOfDeletedUser = deletedUser.Item2;
+                        Console.WriteLine($"Izbrisan je korisnik {deletedUserID} - {nameOfDeletedUser} - {surnameOfDeletedUser}");
+
+                        return;
+                    }
+
+                    if (matchingUser.Count == 0)
+                    {
+                        Console.WriteLine("Ne postoji korisnik koji ima to ime!");
+                    }
+
+                    else if (matchingUser.Count == 1)
+                    {
+                        int userID = matchingUser[0];
+                        var user = referenceUsers[userID];
+                        string name = user.Item1;
+                        string surname = user.Item2;
+                        Console.WriteLine($"{userID} - {name} - {surname}");
+                        Console.WriteLine("Jeste li mislili na ovog korisnika? Ako da, upisite njegov ID");
+
+                        string inputID = Console.ReadLine();
+                        if (int.TryParse(inputID, out int userIDToDelete))
+                        {
+                            if (userIDToDelete == userID)
+                            {
+                                referenceUsers.Remove(userID);
+                                Console.WriteLine($"Izbrisan je korisnik {userID} - {name} - {surname}");
+                            }
+                            else Console.WriteLine("To nije ID od korisnika!");
+                        }
+                        else Console.WriteLine("To nije ID od korisnika!");
+                    }
+
+                    else
+                    {
+                        foreach (int userID in matchingUser)
+                        {
+                            var user = referenceUsers[userID];
+                            string name = user.Item1;
+                            string surname = user.Item2;
+                            Console.WriteLine($"{userID} - {name} - {surname}");
+                        }
+                        Console.WriteLine("Jeste li mislili na jednog od ovih korisnika? Ako da, upisite njegov ID");
+
+                        string inputID = Console.ReadLine();
+                        if (int.TryParse(inputID, out int userIDToDelete))
+                        {
+                            foreach (int userID in matchingUser)
+                            {
+                                if (userIDToDelete == userID)
+                                {
+                                    var user = referenceUsers[userID];
+                                    string name = user.Item1;
+                                    string surname = user.Item2;
+                                    referenceUsers.Remove(userID);
+                                    Console.WriteLine($"Izbrisan je korisnik {userID} - {name} - {surname}");
+                                }
+                                else Console.WriteLine("To nije ID od korisnika!");
+                            }
+                        }
+                        else Console.WriteLine("To nije ID od korisnika!");
+                    }
+                }
             }
 
             void editUser()
