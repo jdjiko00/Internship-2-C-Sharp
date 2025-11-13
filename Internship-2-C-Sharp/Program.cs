@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Globalization;
 
 namespace Internship_2_C_Sharp
 {
@@ -73,12 +74,78 @@ namespace Internship_2_C_Sharp
                 }
             };
 
-            void newUser()
+            /*void newUser(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users)
             {
-                Console.WriteLine("Dodavanje novog korisnika");
-            }
+                int numberOfUsers = users.Count;
+                int userID = numberOfUsers + 1;
 
-            void deleteUser()
+                Console.Write("Unesite ime: ");
+                string name = Console.ReadLine();
+
+                Console.Write("Unesite prezime: ");
+                string surname = Console.ReadLine();
+
+                DateTime birthDate;
+                while (true)
+                {
+                    Console.Write("Unesite datum rodenja (YYYY-MM-DD): ");
+                    string date = Console.ReadLine();
+                    if (DateTime.TryParseExact(date, "yyyy-MM-dd", null, DateTimeStyles.None, out birthDate))
+                        break;
+                    else
+                        Console.WriteLine("Neispravan format!");
+                }
+
+                Console.Write("Zelite li unijeti putovanje (Y/N): ");
+                char addingTravel = char.Parse(Console.ReadLine());
+                var travel = new Dictionary<int, Tuple<DateTime, double, double, double, double>>();
+
+                if (addingTravel == 'Y')
+                {
+                    int numberOfTravles = 0;
+                    foreach (var user in users)
+                    {
+                        numberOfTravles += user.Value.Item4.Count;
+                    }
+                    int travelID = numberOfTravles + 1;
+
+                    DateTime travelDate;
+                    while (true)
+                    {
+                        Console.Write("Unesite datum rodenja (YYYY-MM-DD): ");
+                        string entryDate = Console.ReadLine();
+                        if (DateTime.TryParseExact(entryDate, "yyyy-MM-dd", null, DateTimeStyles.None, out travelDate))
+                            break;
+                        else
+                            Console.WriteLine("Neispravan format!");
+                    }
+
+                    Console.Write("Unesite kilometrazu: ");
+                    double travelLength = double.Parse(Console.ReadLine());
+
+                    Console.Write("Unesite potroseno gorivo (L): ");
+                    double fuelConsumed = double.Parse(Console.ReadLine());
+
+                    Console.Write("Unesite cijenu po litri: ");
+                    double pricePerLiter = double.Parse(Console.ReadLine());
+
+                    double totalCost = fuelConsumed * pricePerLiter;
+
+                    travel.Add(travelID, new Tuple<DateTime, double, double, double, double>(travelDate, travelLength, fuelConsumed, pricePerLiter, totalCost));
+
+                    users.Add(userID, new Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>(
+                        name, surname, birthDate, travel
+                    ));
+                }
+                else if (addingTravel == 'N')
+                {
+                    users.Add(userID, new Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>(
+                        name, surname, birthDate, travel
+                    ));
+                }
+            }*/
+
+            /*void deleteUser()
             {
                 Console.WriteLine("Brisanje korisnika");
             }
@@ -91,9 +158,9 @@ namespace Internship_2_C_Sharp
             void showUsers()
             {
                 Console.WriteLine("Pregled korisnika");
-            }
+            }*/
 
-            void userApp()
+            /*void userApp(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users)
             {
                 Console.WriteLine("");
                 bool userAppFinished = false;
@@ -110,7 +177,7 @@ namespace Internship_2_C_Sharp
                         switch (userChoice)
                         {
                             case 1:
-                                newUser();
+                                newUser(users);
                                 break;
                             case 2:
                                 deleteUser();
@@ -132,7 +199,7 @@ namespace Internship_2_C_Sharp
                     }
                 }
                 while (!userAppFinished);
-            }
+            }*/
 
             void travelApp()
             {
@@ -164,7 +231,7 @@ namespace Internship_2_C_Sharp
                     switch (appChoice)
                     {
                         case 1:
-                            userApp();
+                            userApp(users);
                             break;
                         case 2:
                             travelApp();
@@ -180,6 +247,179 @@ namespace Internship_2_C_Sharp
                 }
             }
             while (!appFinished);
+        }
+
+        static DateTime entryAndCheckDate(string message)
+        {
+            DateTime date;
+            while (true)
+            {
+                Console.Write(message);
+                string entryDate = Console.ReadLine();
+                if (DateTime.TryParseExact(entryDate, "yyyy-MM-dd", null, DateTimeStyles.None, out date))
+                    break;
+                else
+                    Console.WriteLine("Neispravan format datuma!");
+            }
+
+            return date;
+        }
+
+        static double entryAndCheckValue(string message)
+        {
+            double value;
+            while (true)
+            {
+                Console.Write(message);
+                string entryValue = Console.ReadLine();
+                if (double.TryParse(entryValue, NumberStyles.Any, CultureInfo.InvariantCulture, out value))
+                    break;
+                else
+                    Console.WriteLine("Neispravan unos. Molim unesite broj.");
+            }
+
+            return value;
+        }
+
+        static bool checkForAddingTravel(string message)
+        {
+            string addingTravel;
+            bool travelCheck;
+
+            while (true)
+            {
+                Console.Write(message);
+                addingTravel = Console.ReadLine().Trim().ToUpper();
+
+                if (addingTravel == "NE" || addingTravel == "N")
+                {
+                    travelCheck = false;
+                    break;
+                }
+                else if (addingTravel == "DA" || addingTravel == "D")
+                {
+                    travelCheck = true;
+                    break;
+                }
+                else Console.WriteLine("Morate upisati DA ili NE!");
+            }
+
+            return travelCheck;
+        }
+
+        static void userApp(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users)
+        {
+            Console.WriteLine("");
+            bool userAppFinished = false;
+            do
+            {
+                Console.WriteLine("1 - Unos novog korisnika");
+                Console.WriteLine("2 - Brisanje korisnika");
+                Console.WriteLine("3 - Uređivanje korisnika");
+                Console.WriteLine("4 - Pregled svih korisnika");
+                Console.WriteLine("0 - Povratak na glavni izbornik");
+                Console.Write("\nOdabir: ");
+                if (int.TryParse(Console.ReadLine(), out int userChoice))
+                {
+                    switch (userChoice)
+                    {
+                        case 1:
+                            newUser(users);
+                            break;
+                        case 2:
+                            deleteUser();
+                            break;
+                        case 3:
+                            editUser();
+                            break;
+                        case 4:
+                            showUsers(users);
+                            break;
+                        case 0:
+                            Console.WriteLine("Izlazak iz korisnicke aplikacije...");
+                            userAppFinished = true;
+                            break;
+                        default:
+                            Console.WriteLine("Krivi odabir!");
+                            break;
+                    }
+                }
+            }
+            while (!userAppFinished);
+
+            void newUser(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> referenceUsers)
+            {
+                int numberOfUsers = referenceUsers.Count;
+                int userID = numberOfUsers + 1;
+
+                Console.Write("Unesite ime: ");
+                string name = Console.ReadLine();
+
+                Console.Write("Unesite prezime: ");
+                string surname = Console.ReadLine();
+
+                DateTime birthDate = entryAndCheckDate("Unesite datum rodenja (YYYY-MM-DD): ");
+
+                bool travelCheck = checkForAddingTravel("Zelite li unijeti putovanje (DA/NE): ");
+
+                var travel = new Dictionary<int, Tuple<DateTime, double, double, double, double>>();
+                int numberOfTravles = 0;
+                foreach (var user in referenceUsers)
+                {
+                    numberOfTravles += user.Value.Item4.Count;
+                }
+
+                while (travelCheck)
+                {
+                    int travelID = numberOfTravles + 1;
+
+                    DateTime travelDate = entryAndCheckDate("Unesite datum putovanja (YYYY-MM-DD): ");
+
+                    double travelLength = entryAndCheckValue("Unesite kilometrazu: ");
+
+                    double fuelConsumed = entryAndCheckValue("Unesite potroseno gorivo (L): ");
+
+                    double pricePerLiter = entryAndCheckValue("Unesite cijenu po litri: ");
+
+                    double totalCost = fuelConsumed * pricePerLiter;
+
+                    travel.Add(travelID, new Tuple<DateTime, double, double, double, double>(travelDate, travelLength, fuelConsumed, pricePerLiter, totalCost));
+
+                    travelCheck = checkForAddingTravel("Zelite li unijeti jos jedno putovanje (DA/NE): ");
+                }
+
+                Console.WriteLine("");
+
+                referenceUsers.Add(userID, new Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>(
+                        name, surname, birthDate, travel
+                    ));
+            }
+
+            void deleteUser()
+            {
+                Console.WriteLine("Brisanje korisnika");
+            }
+
+            void editUser()
+            {
+                Console.WriteLine("Uredivanje korisnika");
+            }
+
+            void showUsers(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> referenceUsers)
+            {
+                Console.WriteLine("");
+                var tempUsers = referenceUsers
+                    .OrderBy(surname => surname.Value.Item2)
+                    .ThenBy(name => name.Value.Item1)
+                    .ToList();
+
+                foreach ( var user in tempUsers )
+                {
+                    Console.WriteLine($"{user.Key} - {user.Value.Item1} - {user.Value.Item2} - {user.Value.Item3.ToString("yyyy-MM-dd")}");
+                }
+
+                Console.WriteLine("");
+            }
         }
     }
 }
