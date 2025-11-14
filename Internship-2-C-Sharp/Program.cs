@@ -153,26 +153,26 @@ namespace Internship_2_C_Sharp
             }
         }
 
-        static bool checkForAddingTravel(string message)
+        static bool validation(string message)
         {
-            string addingTravel;
-            bool travelCheck;
+            string answer;
+            bool answerCheck;
 
             while (true)
             {
                 Console.Write(message);
-                addingTravel = Console.ReadLine().Trim().ToUpper();
+                answer = Console.ReadLine().Trim().ToUpper();
 
-                if (addingTravel == "NE" || addingTravel == "N")
+                if (answer == "NE" || answer == "N")
                 {
-                    travelCheck = false;
-                    return travelCheck;
+                    answerCheck = false;
+                    return answerCheck;
                 }
 
-                else if (addingTravel == "DA" || addingTravel == "D")
+                else if (answer == "DA" || answer == "D")
                 {
-                    travelCheck = true;
-                    return travelCheck;
+                    answerCheck = true;
+                    return answerCheck;
                 }
 
                 else
@@ -222,261 +222,315 @@ namespace Internship_2_C_Sharp
                 }
             }
             while (!userAppFinished);
+        }
+        
+        static void addingUser(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users, int userID)
+        {
+            Console.WriteLine("");
+            if (!validation("Zelite li dodati korisnika (DA/NE): "))
+                return;
 
-            void newUser(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> referenceUsers)
+            Console.Write("Unesite ime: ");
+            string name = Console.ReadLine();
+
+            Console.Write("Unesite prezime: ");
+            string surname = Console.ReadLine();
+
+            DateTime birthDate = entryAndCheckDate("Unesite datum rodenja (YYYY-MM-DD): ");
+
+            bool travelCheck = validation("Zelite li unijeti putovanje (DA/NE): ");
+
+            var travel = new Dictionary<int, Tuple<DateTime, double, double, double, double>>();
+            int travelID = 1;
+
+            travel = addingTravels(travel, travelID, travelCheck);
+
+            users.Add(userID, new Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>(
+                    name, surname, birthDate, travel
+                ));
+        }
+
+        static void newUser(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users)
+        {
+            Console.WriteLine("");
+
+            int numberOfUsers = users.Count;
+            int userID = numberOfUsers + 1;
+
+            foreach (var user in users)
             {
-                int numberOfUsers = referenceUsers.Count;
-                int userID = numberOfUsers + 1;
-
-                foreach (var user in referenceUsers)
-                {
-                    if (userID == user.Key)
-                        userID++;
-                }
-
-                Console.Write("Unesite ime: ");
-                string name = Console.ReadLine();
-
-                Console.Write("Unesite prezime: ");
-                string surname = Console.ReadLine();
-
-                DateTime birthDate = entryAndCheckDate("Unesite datum rodenja (YYYY-MM-DD): ");
-
-                bool travelCheck = checkForAddingTravel("Zelite li unijeti putovanje (DA/NE): ");
-
-                var travel = new Dictionary<int, Tuple<DateTime, double, double, double, double>>();
-                int travelID = 0;
-
-                while (travelCheck)
-                {
-                    travelID++;
-
-                    DateTime travelDate = entryAndCheckDate("Unesite datum putovanja (YYYY-MM-DD): ");
-
-                    double travelLength = entryAndCheckValue("Unesite kilometrazu: ");
-
-                    double fuelConsumed = entryAndCheckValue("Unesite potroseno gorivo (L): ");
-
-                    double pricePerLiter = entryAndCheckValue("Unesite cijenu po litri: ");
-
-                    double totalCost = fuelConsumed * pricePerLiter;
-
-                    travel.Add(travelID, new Tuple<DateTime, double, double, double, double>(travelDate, travelLength, fuelConsumed, pricePerLiter, totalCost));
-
-                    travelCheck = checkForAddingTravel("Zelite li unijeti jos jedno putovanje (DA/NE): ");
-                }
-
-                Console.WriteLine("");
-
-                referenceUsers.Add(userID, new Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>(
-                        name, surname, birthDate, travel
-                    ));
+                if (userID == user.Key)
+                    userID++;
             }
 
-            void deleteUser(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> referenceUsers)
+            addingUser(users, userID);
+
+            Console.WriteLine("Pritisnite bilo koju tipku za nastavak...");
+            Console.ReadKey();
+
+            Console.WriteLine("");
+        }
+
+        static void deletingUser(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users, int userID)
+        {
+            Console.WriteLine("");
+            if (!validation("Zelite li izbrisati korisnika (DA/NE): "))
+                return;
+
+            var user = users[userID];
+            string name = user.Item1;
+            string surname = user.Item2;
+
+            users.Remove(userID);
+
+            Console.WriteLine($"Izbrisan je korisnik {userID} - {name} - {surname}");
+
+            Console.WriteLine("");
+        }
+
+        static void deleteUser(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users)
+        {
+            Console.WriteLine("");
+
+            Console.Write("Unesite ID ili ime korisnika kojeg zelite izbrisati: ");
+            string nameOrID = Console.ReadLine().ToUpper();
+
+            if (int.TryParse(nameOrID, out int userID))
             {
-                Console.Write("Unesite ID ili ime korisnika kojeg zelite izbrisati: ");
-                string nameOrID = Console.ReadLine().ToUpper();
-
-                if (int.TryParse(nameOrID, out int ID))
+                if (users.ContainsKey(userID))
                 {
-                    if (referenceUsers.ContainsKey(ID))
-                    {
-                        var user = referenceUsers[ID];
-                        string name = user.Item1;
-                        string surname = user.Item2;
-
-                        users.Remove(ID);
-
-                        Console.WriteLine($"Izbrisan je korisnik {ID} - {name} - {surname}");
-                    }
-                    else Console.WriteLine("Korisnik ne postoji s tom vrijednosti ID-a!");
+                    deletingUser(users, userID);
                 }
-
-                else if (double.TryParse(nameOrID, out double decimalID))
-                    Console.WriteLine("Korisnik ne postoji s tom vrijednosti ID-a!");
-                    
-                else
-                {
-                    List<int> matchingUser = new List<int>();
-                    int deletedUserID = 0;
-                    bool nameMatches = false;
-
-                    foreach (var user in referenceUsers)
-                    {
-                        string upperName = user.Value.Item1.ToUpper();
-                        string upperSurname = user.Value.Item2.ToUpper();
-
-                        string name = user.Value.Item1;
-                        string surname = user.Value.Item2;
-
-                        if (upperName + ' ' + upperSurname == nameOrID)
-                        {
-                            nameMatches = true;
-                            deletedUserID = user.Key;
-                        }
-
-                        else if (upperName.Contains(nameOrID) || upperSurname.Contains(nameOrID))
-                        {
-                            deletedUserID = user.Key;
-                            matchingUser.Add(deletedUserID);
-                        }
-                    }
-
-                    if (nameMatches)
-                    {
-                        var deletedUser = referenceUsers[deletedUserID];
-                        referenceUsers.Remove(deletedUserID);
-                        string nameOfDeletedUser = deletedUser.Item1;
-                        string surnameOfDeletedUser = deletedUser.Item2;
-                        Console.WriteLine($"Izbrisan je korisnik {deletedUserID} - {nameOfDeletedUser} - {surnameOfDeletedUser}");
-
-                        return;
-                    }
-
-                    if (matchingUser.Count == 0)
-                    {
-                        Console.WriteLine("Ne postoji korisnik koji ima to ime!");
-                    }
-
-                    else if (matchingUser.Count == 1)
-                    {
-                        int userID = matchingUser[0];
-                        var user = referenceUsers[userID];
-                        string name = user.Item1;
-                        string surname = user.Item2;
-                        Console.WriteLine($"{userID} - {name} - {surname}");
-                        Console.WriteLine("Jeste li mislili na ovog korisnika? Ako da, upisite njegov ID");
-
-                        string inputID = Console.ReadLine();
-                        if (int.TryParse(inputID, out int userIDToDelete))
-                        {
-                            if (userIDToDelete == userID)
-                            {
-                                referenceUsers.Remove(userID);
-                                Console.WriteLine($"Izbrisan je korisnik {userID} - {name} - {surname}");
-                            }
-                            else Console.WriteLine("To nije ID od korisnika!");
-                        }
-                        else Console.WriteLine("To nije ID od korisnika!");
-                    }
-
-                    else
-                    {
-                        foreach (int userID in matchingUser)
-                        {
-                            var user = referenceUsers[userID];
-                            string name = user.Item1;
-                            string surname = user.Item2;
-                            Console.WriteLine($"{userID} - {name} - {surname}");
-                        }
-                        Console.WriteLine("Jeste li mislili na jednog od ovih korisnika? Ako da, upisite njegov ID");
-
-                        string inputID = Console.ReadLine();
-                        if (int.TryParse(inputID, out int userIDToDelete))
-                        {
-                            foreach (int userID in matchingUser)
-                            {
-                                if (userIDToDelete == userID)
-                                {
-                                    var user = referenceUsers[userID];
-                                    string name = user.Item1;
-                                    string surname = user.Item2;
-                                    referenceUsers.Remove(userID);
-                                    Console.WriteLine($"Izbrisan je korisnik {userID} - {name} - {surname}");
-                                }
-                                else Console.WriteLine("To nije ID od korisnika!");
-                            }
-                        }
-                        else Console.WriteLine("To nije ID od korisnika!");
-                    }
-                }
-            }
-
-            void editUser(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> referenceUsers)
-            {
-                Console.Write("Unesite ID korisnika kojeg zelite urediti: ");
-                string nameOrID = Console.ReadLine();
-
-                if (int.TryParse(nameOrID, out int ID))
-                {
-                    if (referenceUsers.ContainsKey(ID))
-                    {
-                        var user = referenceUsers[ID];
-                        string name = user.Item1;
-                        string surname = user.Item2;
-                        DateTime birthDate = user.Item3;
-
-                        Console.WriteLine($"Ureduje se korisnik {ID} - {name} - {surname}");
-
-                        Console.Write($"Unesite novo ime (ENTER za zadržati '{name}'): ");
-                        string newName = Console.ReadLine();
-                        if (string.IsNullOrWhiteSpace(newName))
-                            newName = name;
-
-                        Console.Write($"Unesite novo ime (ENTER za zadržati '{surname}'): ");
-                        string newSurname = Console.ReadLine();
-                        if (string.IsNullOrWhiteSpace(newSurname))
-                            newSurname = surname;
-
-                        DateTime newBirthDate = entryAndCheckDate($"Unesite novi datum rodenja (YYYY-MM-DD) (ENTER za zadržati '{birthDate.ToString("yyyy-MM-dd")}'): ", birthDate);
-
-                        referenceUsers[ID] = new Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>(
-                            newName, newSurname, newBirthDate, user.Item4
-                            );
-                    }
-                    else Console.WriteLine("Korisnik ne postoji s tom vrijednosti ID-a!");
-                }
-
                 else Console.WriteLine("Korisnik ne postoji s tom vrijednosti ID-a!");
             }
 
-            void showUsers(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> referenceUsers)
+            else if (double.TryParse(nameOrID, out double decimalID))
+                Console.WriteLine("Korisnik ne postoji s tom vrijednosti ID-a!");
+
+            else
             {
-                Console.WriteLine("");
-                var tempUsers = referenceUsers
-                    .OrderBy(surname => surname.Value.Item2)
-                    .ThenBy(name => name.Value.Item1)
-                    .ToList();
+                List<int> matchingUser = new List<int>();
+                int deletedUserID = 0;
+                bool nameMatches = false;
 
-                foreach (var user in tempUsers)
+                foreach (var user in users)
                 {
-                    Console.WriteLine($"{user.Key} - {user.Value.Item1} - {user.Value.Item2} - {user.Value.Item3.ToString("yyyy-MM-dd")}");
+                    string upperName = user.Value.Item1.ToUpper();
+                    string upperSurname = user.Value.Item2.ToUpper();
+
+                    if (upperName + ' ' + upperSurname == nameOrID)
+                    {
+                        nameMatches = true;
+                        deletedUserID = user.Key;
+                    }
+
+                    else if (upperName.Contains(nameOrID) || upperSurname.Contains(nameOrID))
+                    {
+                        deletedUserID = user.Key;
+                        matchingUser.Add(deletedUserID);
+                    }
                 }
 
-                Console.WriteLine("");
-
-                Console.WriteLine("Ispis korisnika s 2 ili vise putovanja");
-                int numberOfTravels = 0;
-
-                foreach (var user in referenceUsers)
+                if (nameMatches)
                 {
-                    numberOfTravels = user.Value.Item4.Count;
+                    deletingUser(users, deletedUserID);
 
-                    if (numberOfTravels >= 2)
-                        Console.WriteLine($"{user.Key} - {user.Value.Item1} - {user.Value.Item2} - {user.Value.Item3.ToString("yyyy-MM-dd")}");
+                    return;
                 }
 
-                Console.WriteLine("");
-
-                Console.WriteLine("Ispis korisnika koji imaju preko 20 godina");
-                int years = 0;
-
-                foreach (var user in referenceUsers)
+                if (matchingUser.Count == 0)
                 {
-                    DateTime userBirthDate = user.Value.Item3;
-                    years = DateTime.Now.Year - userBirthDate.Year;
-
-                    if (DateTime.Now.Month < userBirthDate.Month ||
-                        (DateTime.Now.Month == userBirthDate.Month && DateTime.Now.Day < userBirthDate.Day))
-                        years--;
-
-                    if (years > 20)
-                        Console.WriteLine($"{user.Key} - {user.Value.Item1} - {user.Value.Item2} - {userBirthDate.ToString("yyyy-MM-dd")}");
+                    Console.WriteLine("Ne postoji korisnik koji ima to ime!");
                 }
 
-                Console.WriteLine("");
+                else if (matchingUser.Count == 1)
+                {
+                    userID = matchingUser[0];
+                    var user = users[userID];
+                    string name = user.Item1;
+                    string surname = user.Item2;
+                    Console.WriteLine("");
+                    Console.WriteLine($"{userID} - {name} - {surname}");
+                    Console.WriteLine("");
+                    Console.WriteLine("Jeste li mislili na ovog korisnika? Ako da, upisite njegov ID");
+
+                    Console.Write("Unos ID-a: ");
+                    string inputID = Console.ReadLine();
+                    if (int.TryParse(inputID, out int userIDToDelete))
+                    {
+                        if (userIDToDelete == userID)
+                        {
+                            deletingUser(users, userID);
+                        }
+                        else Console.WriteLine("To nije ID od korisnika!");
+                    }
+                    else Console.WriteLine("To nije ID od korisnika!");
+                }
+
+                else
+                {
+                    Console.WriteLine("");
+                    foreach (int matchingUserID in matchingUser)
+                    {
+                        var user = users[matchingUserID];
+                        string name = user.Item1;
+                        string surname = user.Item2;
+                        Console.WriteLine($"{matchingUserID} - {name} - {surname}");
+                    }
+                    Console.WriteLine("");
+                    Console.WriteLine("Jeste li mislili na jednog od ovih korisnika? Ako da, upisite njegov ID");
+
+                    string inputID = Console.ReadLine();
+                    if (int.TryParse(inputID, out int userIDToDelete))
+                    {
+                        foreach (int userIDForDeleting in matchingUser)
+                        {
+                            if (userIDToDelete == userIDForDeleting)
+                            {
+                                deletingUser(users, userIDForDeleting);
+                            }
+                            else Console.WriteLine("To nije ID od korisnika!");
+                        }
+                    }
+                    else Console.WriteLine("To nije ID od korisnika!");
+                }
             }
+
+            Console.WriteLine("Pritisnite bilo koju tipku za nastavak...");
+            Console.ReadKey();
+
+            Console.WriteLine("");
+        }
+
+        static void editingUser(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users, int userID)
+        {
+            Console.WriteLine("");
+            if (!validation("Zelite li urediti korisnika (DA/NE): "))
+                return;
+
+            var user = users[userID];
+            string name = user.Item1;
+            string surname = user.Item2;
+            DateTime birthDate = user.Item3;
+
+            Console.WriteLine("");
+            Console.WriteLine($"Ureduje se korisnik {userID} - {name} - {surname}");
+
+            Console.Write($"Unesite novo ime (ENTER za zadržati '{name}'): ");
+            string newName = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(newName))
+                newName = name;
+
+            Console.Write($"Unesite novo ime (ENTER za zadržati '{surname}'): ");
+            string newSurname = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(newSurname))
+                newSurname = surname;
+
+            DateTime newBirthDate = entryAndCheckDate($"Unesite novi datum rodenja (YYYY-MM-DD) (ENTER za zadržati '{birthDate.ToString("yyyy-MM-dd")}'): ", birthDate);
+
+            users[userID] = new Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>(
+                newName, newSurname, newBirthDate, user.Item4
+                );
+
+            Console.WriteLine("");
+        }
+
+        static void editUser(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users)
+        {
+            Console.WriteLine("");
+
+            Console.Write("Unesite ID korisnika kojeg zelite urediti: ");
+            string inputID = Console.ReadLine();
+
+            if (int.TryParse(inputID, out int userID))
+            {
+                if (users.ContainsKey(userID))
+                {
+                    editingUser(users, userID);
+                }
+                else Console.WriteLine("Korisnik ne postoji s tom vrijednosti ID-a!");
+            }
+
+            else Console.WriteLine("Korisnik ne postoji s tom vrijednosti ID-a!");
+
+            Console.WriteLine("Pritisnite bilo koju tipku za nastavak...");
+            Console.ReadKey();
+
+            Console.WriteLine("");
+        }
+
+        static void showUsers(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> referenceUsers)
+        {
+            Console.WriteLine("");
+            var tempUsers = referenceUsers
+                .OrderBy(surname => surname.Value.Item2)
+                .ThenBy(name => name.Value.Item1)
+                .ToList();
+
+            foreach (var user in tempUsers)
+            {
+                Console.WriteLine($"{user.Key} - {user.Value.Item1} - {user.Value.Item2} - {user.Value.Item3.ToString("yyyy-MM-dd")}");
+            }
+
+            Console.WriteLine("");
+
+            Console.WriteLine("Ispis korisnika s 2 ili vise putovanja");
+            int numberOfTravels = 0;
+
+            foreach (var user in referenceUsers)
+            {
+                numberOfTravels = user.Value.Item4.Count;
+
+                if (numberOfTravels >= 2)
+                    Console.WriteLine($"{user.Key} - {user.Value.Item1} - {user.Value.Item2} - {user.Value.Item3.ToString("yyyy-MM-dd")}");
+            }
+
+            Console.WriteLine("");
+
+            Console.WriteLine("Ispis korisnika koji imaju preko 20 godina");
+            int years = 0;
+
+            foreach (var user in referenceUsers)
+            {
+                DateTime userBirthDate = user.Value.Item3;
+                years = DateTime.Now.Year - userBirthDate.Year;
+
+                if (DateTime.Now.Month < userBirthDate.Month ||
+                    (DateTime.Now.Month == userBirthDate.Month && DateTime.Now.Day < userBirthDate.Day))
+                    years--;
+
+                if (years > 20)
+                    Console.WriteLine($"{user.Key} - {user.Value.Item1} - {user.Value.Item2} - {userBirthDate.ToString("yyyy-MM-dd")}");
+            }
+
+            Console.WriteLine("");
+        }
+
+        static Dictionary<int, Tuple<DateTime, double, double, double, double>> addingTravels(Dictionary<int, Tuple<DateTime, double, double, double, double>> travel, int travelID, bool travelCheck)
+        {
+            while (travelCheck)
+            {
+                DateTime travelDate = entryAndCheckDate("Unesite datum putovanja (YYYY-MM-DD): ");
+
+                double travelLength = entryAndCheckValue("Unesite kilometrazu: ");
+
+                double fuelConsumed = entryAndCheckValue("Unesite potroseno gorivo (L): ");
+
+                double pricePerLiter = entryAndCheckValue("Unesite cijenu po litri: ");
+
+                double totalCost = fuelConsumed * pricePerLiter;
+
+                travel.Add(travelID, new Tuple<DateTime, double, double, double, double>(travelDate, travelLength, fuelConsumed, pricePerLiter, totalCost));
+
+                travelCheck = validation("Zelite li unijeti jos jedno putovanje (DA/NE): ");
+
+                if (travelCheck)
+                    travelID++;
+            }
+
+            Console.WriteLine("");
+
+            return travel;
         }
 
         static void travelApp(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users)
@@ -545,7 +599,7 @@ namespace Internship_2_C_Sharp
                         string surname = user.Item2;
                         DateTime birthDate = user.Item3;
 
-                        bool travelCheck = checkForAddingTravel("Zelite li unijeti putovanje (DA/NE): ");
+                        bool travelCheck = validation("Zelite li unijeti putovanje (DA/NE): ");
                         if (!travelCheck)
                         {
                             return;
@@ -576,7 +630,7 @@ namespace Internship_2_C_Sharp
 
                             travels.Add(travelID, new Tuple<DateTime, double, double, double, double>(travelDate, travelLength, fuelConsumed, pricePerLiter, totalCost));
 
-                            travelCheck = checkForAddingTravel("Zelite li unijeti jos jedno putovanje (DA/NE): ");
+                            travelCheck = validation("Zelite li unijeti jos jedno putovanje (DA/NE): ");
 
                             if (travelCheck)
                                 travelID++;
@@ -835,14 +889,14 @@ namespace Internship_2_C_Sharp
                     if (costChoice == "UZLAZNO" || costChoice == "U")
                     {
                         travelsSorted = travels
-                            .OrderBy(totalCost => totalCost.Value.Item1)
+                            .OrderBy(totalCost => totalCost.Value.Item2)
                             .ToList();
                     }
 
                     else if (costChoice == "SILAZNO" || costChoice == "S")
                     {
                         travelsSorted = travels
-                            .OrderByDescending(totalCost => totalCost.Value.Item1)
+                            .OrderByDescending(totalCost => totalCost.Value.Item2)
                             .ToList();
                     }
 
