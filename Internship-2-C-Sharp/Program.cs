@@ -522,6 +522,7 @@ namespace Internship_2_C_Sharp
 
                 travel.Add(travelID, new Tuple<DateTime, double, double, double, double>(travelDate, travelLength, fuelConsumed, pricePerLiter, totalCost));
 
+                Console.WriteLine("");
                 travelCheck = validation("Zelite li unijeti jos jedno putovanje (DA/NE): ");
 
                 if (travelCheck)
@@ -576,136 +577,6 @@ namespace Internship_2_C_Sharp
                 }
             }
             while (!travelAppFinished);
-
-            void newTravel(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> referenceUsers)
-            {
-                Console.WriteLine("Odaberite ID korisnika kojem zelite dodati putovanje");
-
-                Console.WriteLine("KORISNICI:");
-                foreach (var user in referenceUsers)
-                {
-                    Console.WriteLine($"{user.Key} - {user.Value.Item1} - {user.Value.Item2} - {user.Value.Item3.ToString("yyyy-MM-dd")}");
-                }
-                Console.WriteLine("");
-
-                string userID = Console.ReadLine();
-
-                if (int.TryParse(userID, out int ID))
-                {
-                    if (referenceUsers.ContainsKey(ID))
-                    {
-                        var user = referenceUsers[ID];
-                        string name = user.Item1;
-                        string surname = user.Item2;
-                        DateTime birthDate = user.Item3;
-
-                        bool travelCheck = validation("Zelite li unijeti putovanje (DA/NE): ");
-                        if (!travelCheck)
-                        {
-                            return;
-                        }
-
-                        Console.WriteLine($"Dodaje se putovanje korisniku {ID} - {name} - {surname}");
-
-                        var travels = user.Item4;
-                        int numberOfTravles = travels.Count;
-                        int travelID = numberOfTravles + 1;
-                        foreach (var travel in travels)
-                        {
-                            if (travelID == travel.Key)
-                                travelID++;
-                        }
-
-                        while (travelCheck)
-                        {
-                            DateTime travelDate = entryAndCheckDate("Unesite datum putovanja (YYYY-MM-DD): ");
-
-                            double travelLength = entryAndCheckValue("Unesite kilometrazu: ");
-
-                            double fuelConsumed = entryAndCheckValue("Unesite potroseno gorivo (L): ");
-
-                            double pricePerLiter = entryAndCheckValue("Unesite cijenu po litri: ");
-
-                            double totalCost = fuelConsumed * pricePerLiter;
-
-                            travels.Add(travelID, new Tuple<DateTime, double, double, double, double>(travelDate, travelLength, fuelConsumed, pricePerLiter, totalCost));
-
-                            travelCheck = validation("Zelite li unijeti jos jedno putovanje (DA/NE): ");
-
-                            if (travelCheck)
-                                travelID++;
-                        }
-
-                        referenceUsers[ID] = new Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>(
-                            name, surname, birthDate, travels
-                            );
-                    }
-                    else Console.WriteLine("Korisnik ne postoji s tom vrijednosti ID-a!");
-                }
-            }
-
-            void deleteTravel(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> referenceUsers)
-            {
-                Console.WriteLine("Odaberite ID korisnika kojem zelite izbrisati putovanje");
-
-                Console.WriteLine("KORISNICI:");
-                foreach (var user in referenceUsers)
-                {
-                    Console.WriteLine($"{user.Key} - {user.Value.Item1} - {user.Value.Item2} - {user.Value.Item3.ToString("yyyy-MM-dd")}");
-                }
-                Console.WriteLine("");
-
-                string userID = Console.ReadLine();
-
-                if (int.TryParse(userID, out int ID))
-                {
-                    if (referenceUsers.ContainsKey(ID))
-                    {
-                        var user = referenceUsers[ID];
-
-                        Console.WriteLine("Odaberite broj putovanja koje zelite izbrisati");
-
-                        var travels = user.Item4;
-                        foreach (var travel in travels)
-                        {
-                            Console.WriteLine($"Putovanje #{travel.Key}");
-                            Console.WriteLine($"Datum: {travel.Value.Item1.ToString("yyyy-MM-dd")}");
-                            Console.WriteLine($"Kilometri: {travel.Value.Item2}");
-                            Console.WriteLine($"Gorivo: {travel.Value.Item3} L");
-                            Console.WriteLine($"Cijena po litri: {travel.Value.Item4} EUR");
-                            Console.WriteLine($"Ukupno: {travel.Value.Item5} EUR");
-                            Console.WriteLine("");
-                        }
-
-                        Console.WriteLine("");
-
-                        string entryTravelID = Console.ReadLine();
-                        if (int.TryParse(entryTravelID, out int travelID))
-                        {
-                            if (travels.ContainsKey(travelID))
-                            {
-                                var travel = travels[travelID];
-
-                                Console.WriteLine("Brise se sljedece putovanje!");
-                                Console.WriteLine("");
-                                Console.WriteLine($"Putovanje #{travelID}");
-                                Console.WriteLine($"Datum: {travel.Item1.ToString("yyyy-MM-dd")}");
-                                Console.WriteLine($"Kilometri: {travel.Item2}");
-                                Console.WriteLine($"Gorivo: {travel.Item3} L");
-                                Console.WriteLine($"Cijena po litri: {travel.Item4} EUR");
-                                Console.WriteLine($"Ukupno: {travel.Item5} EUR");
-                                Console.WriteLine("");
-
-                                user.Item4.Remove(travelID);
-                            }
-                            else Console.WriteLine("Ne postoji putovanje s tim brojem!");
-                        }
-                        else Console.WriteLine("Neispravan unos!");
-                    }
-                    else Console.WriteLine("Korisnik ne postoji s tom vrijednosti ID-a!");
-                }
-                else Console.WriteLine("Neispravan unos!");
-            }
 
             void editTravel(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> referenceUsers)
             {
@@ -955,6 +826,216 @@ namespace Internship_2_C_Sharp
                         Console.WriteLine($"Ukupno: {travel.Value.Item5} EUR");
                         Console.WriteLine("");
                     }
+                }
+            }
+        }
+
+        static void newTravel(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users)
+        {
+            Console.WriteLine("");
+            Console.WriteLine("Odaberite ID korisnika kojem zelite dodati putovanje");
+            Console.WriteLine("");
+
+            Console.WriteLine("KORISNICI:");
+            foreach (var user in users)
+            {
+                Console.WriteLine($"{user.Key} - {user.Value.Item1} - {user.Value.Item2} - {user.Value.Item3.ToString("yyyy-MM-dd")}");
+            }
+            Console.WriteLine("");
+
+            Console.Write("Odabir: ");
+            string inputID = Console.ReadLine();
+            Console.WriteLine("");
+
+            if (int.TryParse(inputID, out int userID))
+            {
+                if (users.ContainsKey(userID))
+                {
+                    var user = users[userID];
+                    string name = user.Item1;
+                    string surname = user.Item2;
+                    DateTime birthDate = user.Item3;
+
+                    bool travelCheck = validation("Zelite li unijeti putovanje (DA/NE): ");
+                    if (!travelCheck)
+                    {
+                        return;
+                    }
+
+                    Console.WriteLine("");
+                    Console.WriteLine($"Dodaje se putovanje korisniku {userID} - {name} - {surname}");
+
+                    var travels = user.Item4;
+                    int numberOfTravles = travels.Count;
+                    int travelID = numberOfTravles + 1;
+                    foreach (var travel in travels)
+                    {
+                        if (travelID == travel.Key)
+                            travelID++;
+                    }
+
+                    travels = addingTravels(travels, travelID, travelCheck);
+
+                    users[userID] = new Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>(
+                        name, surname, birthDate, travels
+                        );
+                }
+                else Console.WriteLine("Korisnik ne postoji s tom vrijednosti ID-a!");
+
+                Console.WriteLine("Pritisnite bilo koju tipku za nastavak...");
+                Console.ReadKey();
+
+                Console.WriteLine("");
+            }
+        }
+
+        static void deletingTravel(Dictionary<int, Tuple<DateTime, double, double, double, double>> travels)
+        {
+            Console.Write("Odabir: ");
+            string inputTravelID = Console.ReadLine();
+
+            if (!validation("Zelite li izbrisati putovanje (DA/NE): "))
+                return;
+
+            if (int.TryParse(inputTravelID, out int travelID))
+            {
+                if (travels.ContainsKey(travelID))
+                {
+                    var travel = travels[travelID];
+
+                    Console.WriteLine("Brise se sljedece putovanje!");
+                    Console.WriteLine("");
+                    Console.WriteLine($"Putovanje #{travelID}");
+                    Console.WriteLine($"Datum: {travel.Item1.ToString("yyyy-MM-dd")}");
+                    Console.WriteLine($"Kilometri: {travel.Item2}");
+                    Console.WriteLine($"Gorivo: {travel.Item3} L");
+                    Console.WriteLine($"Cijena po litri: {travel.Item4} EUR");
+                    Console.WriteLine($"Ukupno: {travel.Item5} EUR");
+                    Console.WriteLine("");
+
+                    travels.Remove(travelID);
+                }
+                else Console.WriteLine("Ne postoji putovanje s tim brojem!");
+            }
+            else Console.WriteLine("Neispravan unos!");
+        }
+
+        static void deleteTravelByID(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users)
+        {
+            Console.WriteLine("");
+            Console.WriteLine("Odaberite ID korisnika kojem zelite izbrisati putovanje");
+            Console.WriteLine("");
+
+            Console.WriteLine("KORISNICI:");
+            foreach (var user in users)
+            {
+                Console.WriteLine($"{user.Key} - {user.Value.Item1} - {user.Value.Item2} - {user.Value.Item3.ToString("yyyy-MM-dd")}");
+            }
+            Console.WriteLine("");
+
+            Console.Write("Odabir: ");
+            string inputID = Console.ReadLine();
+            Console.WriteLine("");
+
+            if (int.TryParse(inputID, out int userID))
+            {
+                if (users.ContainsKey(userID))
+                {
+                    var user = users[userID];
+
+                    Console.WriteLine("Odaberite broj putovanja koje zelite izbrisati");
+                    Console.WriteLine("");
+
+                    var travels = user.Item4;
+                    foreach (var travel in travels)
+                    {
+                        Console.WriteLine($"Putovanje #{travel.Key}");
+                        Console.WriteLine($"Datum: {travel.Value.Item1.ToString("yyyy-MM-dd")}");
+                        Console.WriteLine($"Kilometri: {travel.Value.Item2}");
+                        Console.WriteLine($"Gorivo: {travel.Value.Item3} L");
+                        Console.WriteLine($"Cijena po litri: {travel.Value.Item4} EUR");
+                        Console.WriteLine($"Ukupno: {travel.Value.Item5} EUR");
+                        Console.WriteLine("");
+                    }
+
+                    deletingTravel(travels);
+                }
+                else Console.WriteLine("Korisnik ne postoji s tom vrijednosti ID-a!");
+            }
+            else Console.WriteLine("Neispravan unos!");
+        }
+
+        static void deleteTravelByHigherCost(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users)
+        {
+            Console.WriteLine("");
+            double cost = entryAndCheckValue("Unesite iznos: ");
+
+            foreach (var user in users)
+            {
+                var travels = user.Value.Item4;
+                List<int> travelsToRemove = new List<int>();
+
+                foreach (var travel in travels)
+                {
+                    if (cost < travel.Value.Item5)
+                    {
+                        travelsToRemove.Add(travel.Key);
+                    }
+                }
+                foreach (var travelKey in travelsToRemove)
+                {
+                    travels.Remove(travelKey);
+                }
+            }
+        }
+
+        static void deleteTravelByLowerCost(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users)
+        {
+            Console.WriteLine("");
+            double cost = entryAndCheckValue("Unesite iznos: ");
+
+            foreach (var user in users)
+            {
+                var travels = user.Value.Item4;
+                List<int> travelsToRemove = new List<int>();
+
+                foreach (var travel in travels)
+                {
+                    if (cost > travel.Value.Item5)
+                    {
+                        travelsToRemove.Add(travel.Key);
+                    }
+                }
+                foreach (var travelKey in travelsToRemove)
+                {
+                    travels.Remove(travelKey);
+                }
+            }
+        }
+
+        static void deleteTravel(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users)
+        {
+            Console.WriteLine("a - Brisanje putovanja po ID-u");
+            Console.WriteLine("b - Brisanje putovanja skupljih od unesenog iznosa");
+            Console.WriteLine("c - Brisanje putovanja jeftinijih od unesenog iznosa");
+            Console.Write("\nOdabir: ");
+            string input = Console.ReadLine().ToLower();
+            if (char.TryParse(input, out char userChoice))
+            {
+                switch (userChoice)
+                {
+                    case 'a':
+                        deleteTravelByID(users);
+                        break;
+                    case 'b':
+                        deleteTravelByHigherCost(users);
+                        break;
+                    case 'c':
+                        deleteTravelByLowerCost(users);
+                        break;
+                    default:
+                        Console.WriteLine("Krivi odabir!");
+                        break;
                 }
             }
         }
