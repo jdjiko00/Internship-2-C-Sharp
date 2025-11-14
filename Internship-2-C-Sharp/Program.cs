@@ -33,7 +33,7 @@ namespace Internship_2_C_Sharp
                 { 2,
                   new Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>
                   (
-                      "Ivo", "Ivic", new DateTime(1999, 4, 19),
+                      "Ivo", "Ivic", new DateTime(1999, 12, 19),
                       new Dictionary<int, Tuple<DateTime, double, double, double, double>>
                       {
                           { 2,
@@ -261,7 +261,8 @@ namespace Internship_2_C_Sharp
 
                 while (travelCheck)
                 {
-                    int travelID = numberOfTravles + 1;
+                    int travelID = numberOfTravles++;
+                    Console.WriteLine($"ID od putovanja koji se dodaje {travelID}");
 
                     DateTime travelDate = entryAndCheckDate("Unesite datum putovanja (YYYY-MM-DD): ");
 
@@ -451,9 +452,39 @@ namespace Internship_2_C_Sharp
                     .ThenBy(name => name.Value.Item1)
                     .ToList();
 
-                foreach ( var user in tempUsers )
+                foreach (var user in tempUsers)
                 {
                     Console.WriteLine($"{user.Key} - {user.Value.Item1} - {user.Value.Item2} - {user.Value.Item3.ToString("yyyy-MM-dd")}");
+                }
+
+                Console.WriteLine("");
+
+                Console.WriteLine("Ispis korisnika s 2 ili vise putovanja");
+                int numberOfTravels = 0;
+
+                foreach (var user in referenceUsers)
+                {
+                    numberOfTravels = user.Value.Item4.Count;
+
+                    if (numberOfTravels >= 2)
+                        Console.WriteLine($"{user.Key} - {user.Value.Item1} - {user.Value.Item2} - {user.Value.Item3.ToString("yyyy-MM-dd")}");
+                }
+
+                Console.WriteLine("");
+
+                Console.WriteLine("Ispis korisnika koji imaju preko 20 godina");
+                int years = 0;
+
+                foreach (var user in referenceUsers)
+                {
+                    DateTime userBirthDate = user.Value.Item3;
+                    years = DateTime.Now.Year - userBirthDate.Year;
+                    if (DateTime.Now.Month < userBirthDate.Month ||
+                        (DateTime.Now.Month == userBirthDate.Month && DateTime.Now.Day < userBirthDate.Day))
+                        years--;
+
+                    if (years > 20)
+                        Console.WriteLine($"{user.Key} - {user.Value.Item1} - {user.Value.Item2} - {userBirthDate.ToString("yyyy-MM-dd")} i ima {years} godina");
                 }
 
                 Console.WriteLine("");
