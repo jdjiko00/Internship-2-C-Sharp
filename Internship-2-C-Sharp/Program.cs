@@ -36,13 +36,13 @@ namespace Internship_2_C_Sharp
                       "Ivo", "Ivic", new DateTime(1999, 12, 19),
                       new Dictionary<int, Tuple<DateTime, double, double, double, double>>
                       {
-                          { 2,
+                          { 1,
                             new Tuple<DateTime, double, double, double, double>
                             (
                                 new DateTime(2019, 7, 14), 350, 28, 1.54, 43.12
                             )
                           },
-                          { 3,
+                          { 2,
                             new Tuple<DateTime, double, double, double, double>
                             (
                                 new DateTime(2022, 1, 10), 300, 25, 1.33, 33.25
@@ -58,13 +58,13 @@ namespace Internship_2_C_Sharp
                       "Jozo", "Jozic", new DateTime(2001, 2, 28),
                       new Dictionary<int, Tuple<DateTime, double, double, double, double>>
                       {
-                          { 4,
+                          { 1,
                             new Tuple<DateTime, double, double, double, double>
                             (
                                 new DateTime(2023, 11, 11), 170, 14, 1.52, 21.28
                             )
                           },
-                          { 5,
+                          { 2,
                             new Tuple<DateTime, double, double, double, double>
                             (
                                 new DateTime(2025, 3, 13), 200, 17, 1.38, 23.46
@@ -74,22 +74,6 @@ namespace Internship_2_C_Sharp
                   )
                 }
             };
-
-            void travelApp()
-            {
-                Console.WriteLine("");
-                //do
-                //{
-                    Console.WriteLine("1 - Unos novog putovanja");
-                    Console.WriteLine("2 - Brisanje putovanja");
-                    Console.WriteLine("3 - Uređivanje postojećeg putovanja");
-                    Console.WriteLine("4 - Pregled svih putovanja");
-                    Console.WriteLine("5 - Izvještaji i analize");
-                    Console.WriteLine("0 - Povratak na glavni izbornik");
-                //}
-                //while (true);
-            }
-
 
             Console.WriteLine("APLIKACIJA ZA EVIDENCIJU GORIVA");
             bool appFinished = false;
@@ -108,7 +92,7 @@ namespace Internship_2_C_Sharp
                             userApp(users);
                             break;
                         case 2:
-                            travelApp();
+                            travelApp(users);
                             break;
                         case 0:
                             Console.WriteLine("Izlazak iz aplikacije...");
@@ -253,16 +237,11 @@ namespace Internship_2_C_Sharp
                 bool travelCheck = checkForAddingTravel("Zelite li unijeti putovanje (DA/NE): ");
 
                 var travel = new Dictionary<int, Tuple<DateTime, double, double, double, double>>();
-                int numberOfTravles = 0;
-                foreach (var user in referenceUsers)
-                {
-                    numberOfTravles += user.Value.Item4.Count;
-                }
+                int travelID = 0;
 
                 while (travelCheck)
                 {
-                    int travelID = numberOfTravles++;
-                    Console.WriteLine($"ID od putovanja koji se dodaje {travelID}");
+                    travelID++;
 
                     DateTime travelDate = entryAndCheckDate("Unesite datum putovanja (YYYY-MM-DD): ");
 
@@ -479,15 +458,223 @@ namespace Internship_2_C_Sharp
                 {
                     DateTime userBirthDate = user.Value.Item3;
                     years = DateTime.Now.Year - userBirthDate.Year;
+
                     if (DateTime.Now.Month < userBirthDate.Month ||
                         (DateTime.Now.Month == userBirthDate.Month && DateTime.Now.Day < userBirthDate.Day))
                         years--;
 
                     if (years > 20)
-                        Console.WriteLine($"{user.Key} - {user.Value.Item1} - {user.Value.Item2} - {userBirthDate.ToString("yyyy-MM-dd")} i ima {years} godina");
+                        Console.WriteLine($"{user.Key} - {user.Value.Item1} - {user.Value.Item2} - {userBirthDate.ToString("yyyy-MM-dd")}");
                 }
 
                 Console.WriteLine("");
+            }
+        }
+
+        static void travelApp(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users)
+        {
+            Console.WriteLine("");
+            bool travelAppFinished = false;
+            do
+            {
+                Console.WriteLine("1 - Unos novog putovanja");
+                Console.WriteLine("2 - Brisanje putovanja");
+                Console.WriteLine("3 - Uređivanje postojećeg putovanja");
+                Console.WriteLine("4 - Pregled svih putovanja");
+                Console.WriteLine("5 - Izvještaji i analize");
+                Console.WriteLine("0 - Povratak na glavni izbornik");
+                Console.Write("\nOdabir: ");
+                if (int.TryParse(Console.ReadLine(), out int userChoice))
+                {
+                    switch (userChoice)
+                    {
+                        case 1:
+                            newTravel(users);
+                            break;
+                        case 2:
+                            deleteTravel(users);
+                            break;
+                        case 3:
+                            editTravel(users);
+                            break;
+                        case 4:
+                            showTravels(users);
+                            break;
+                        case 5:
+                            //reportsAndAnalyses();
+                            break;
+                        case 0:
+                            Console.WriteLine("Izlazak iz aplkacije za putovanja...");
+                            travelAppFinished = true;
+                            break;
+                        default:
+                            Console.WriteLine("Krivi odabir!");
+                            break;
+                    }
+                }
+            }
+            while (!travelAppFinished);
+
+            void newTravel(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> referenceUsers)
+            {
+                Console.WriteLine("Odaberite ID korisnika kojem zelite dodati putovanje");
+
+                Console.WriteLine("KORISNICI:");
+                foreach (var user in referenceUsers)
+                {
+                    Console.WriteLine($"{user.Key} - {user.Value.Item1} - {user.Value.Item2} - {user.Value.Item3.ToString("yyyy-MM-dd")}");
+                }
+                Console.WriteLine("");
+
+                string userID = Console.ReadLine();
+
+                if (int.TryParse(userID, out int ID))
+                {
+                    if (referenceUsers.ContainsKey(ID))
+                    {
+                        var user = referenceUsers[ID];
+                        string name = user.Item1;
+                        string surname = user.Item2;
+                        DateTime birthDate = user.Item3;
+
+                        bool travelCheck = checkForAddingTravel("Zelite li unijeti putovanje (DA/NE): ");
+                        if (!travelCheck)
+                        {
+                            return;
+                        }
+
+                        Console.WriteLine($"Dodaje se putovanje korisniku {ID} - {name} - {surname}");
+
+                        var travels = user.Item4;
+                        int numberOfTravles = travels.Count;
+                        int travelID = numberOfTravles + 1;
+                        foreach (var travel in travels)
+                        {
+                            if (travelID == travel.Key)
+                                travelID++;
+                        }
+
+                        while (travelCheck)
+                        {
+                            DateTime travelDate = entryAndCheckDate("Unesite datum putovanja (YYYY-MM-DD): ");
+
+                            double travelLength = entryAndCheckValue("Unesite kilometrazu: ");
+
+                            double fuelConsumed = entryAndCheckValue("Unesite potroseno gorivo (L): ");
+
+                            double pricePerLiter = entryAndCheckValue("Unesite cijenu po litri: ");
+
+                            double totalCost = fuelConsumed * pricePerLiter;
+
+                            travels.Add(travelID, new Tuple<DateTime, double, double, double, double>(travelDate, travelLength, fuelConsumed, pricePerLiter, totalCost));
+
+                            travelCheck = checkForAddingTravel("Zelite li unijeti jos jedno putovanje (DA/NE): ");
+
+                            if (travelCheck)
+                                travelID++;
+                        }
+
+                        referenceUsers[ID] = new Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>(
+                            name, surname, birthDate, travels
+                            );
+                    }
+                    else Console.WriteLine("Korisnik ne postoji s tom vrijednosti ID-a!");
+                }
+            }
+
+            void deleteTravel(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> referenceUsers)
+            {
+                Console.WriteLine("Odaberite ID korisnika kojem zelite izbrisati putovanje");
+
+                Console.WriteLine("KORISNICI:");
+                foreach (var user in referenceUsers)
+                {
+                    Console.WriteLine($"{user.Key} - {user.Value.Item1} - {user.Value.Item2} - {user.Value.Item3.ToString("yyyy-MM-dd")}");
+                }
+                Console.WriteLine("");
+
+                string userID = Console.ReadLine();
+
+                if (int.TryParse(userID, out int ID))
+                {
+                    if (referenceUsers.ContainsKey(ID))
+                    {
+                        var user = referenceUsers[ID];
+
+                        Console.WriteLine("Odaberite broj putovanja koje zelite izbrisati");
+
+                        var travels = user.Item4;
+                        foreach (var travel in travels)
+                        {
+                            Console.WriteLine($"Putovanje #{travel.Key}");
+                            Console.WriteLine($"Datum: {travel.Value.Item1.ToString("yyyy-MM-dd")}");
+                            Console.WriteLine($"Kilometri: {travel.Value.Item2}");
+                            Console.WriteLine($"Gorivo: {travel.Value.Item3} L");
+                            Console.WriteLine($"Cijena po litri: {travel.Value.Item4} EUR");
+                            Console.WriteLine($"Ukupno: {travel.Value.Item5} EUR");
+                            Console.WriteLine("");
+                        }
+
+                        Console.WriteLine("");
+
+                        string entryTravelID = Console.ReadLine();
+                        if (int.TryParse(entryTravelID, out int travelID))
+                        {
+                            if (travels.ContainsKey(travelID))
+                            {
+                                var travel = travels[travelID];
+
+                                Console.WriteLine("Brise se sljedece putovanje!");
+                                Console.WriteLine("");
+                                Console.WriteLine($"Putovanje #{travelID}");
+                                Console.WriteLine($"Datum: {travel.Item1.ToString("yyyy-MM-dd")}");
+                                Console.WriteLine($"Kilometri: {travel.Item2}");
+                                Console.WriteLine($"Gorivo: {travel.Item3} L");
+                                Console.WriteLine($"Cijena po litri: {travel.Item4} EUR");
+                                Console.WriteLine($"Ukupno: {travel.Item5} EUR");
+                                Console.WriteLine("");
+
+                                user.Item4.Remove(travelID);
+                            }
+                            else Console.WriteLine("Ne postoji putovanje s tim brojem!");
+                        }
+                        else Console.WriteLine("Neispravan unos!");
+                    }
+                    else Console.WriteLine("Korisnik ne postoji s tom vrijednosti ID-a!");
+                }
+                else Console.WriteLine("Neispravan unos!");
+            }
+
+            void deleteTravel(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> referenceUsers)
+            {
+
+            }
+
+            void showTravels(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> referenceUsers)
+            {
+                Console.WriteLine("");
+                Console.WriteLine("Ispis svih putovanja svih korisnika");
+                Console.WriteLine("");
+
+                foreach (var user in referenceUsers)
+                {
+                    Console.WriteLine($"{user.Key} - {user.Value.Item1} - {user.Value.Item2} - {user.Value.Item3.ToString("yyyy-MM-dd")}");
+                    Console.WriteLine("");
+
+                    var travels = user.Value.Item4;
+                    foreach (var travel in travels)
+                    {
+                        Console.WriteLine($"Putovanje #{travel.Key}");
+                        Console.WriteLine($"Datum: {travel.Value.Item1.ToString("yyyy-MM-dd")}");
+                        Console.WriteLine($"Kilometri: {travel.Value.Item2}");
+                        Console.WriteLine($"Gorivo: {travel.Value.Item3} L");
+                        Console.WriteLine($"Cijena po litri: {travel.Value.Item4} EUR");
+                        Console.WriteLine($"Ukupno: {travel.Value.Item5} EUR");
+                        Console.WriteLine("");
+                    }
+
+                    Console.WriteLine("");
+                }
             }
         }
     }
