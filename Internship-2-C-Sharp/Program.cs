@@ -123,17 +123,24 @@ namespace Internship_2_C_Sharp
             while (!appFinished);
         }
 
-        static DateTime entryAndCheckDate(string message)
+        static DateTime entryAndCheckDate(string message, DateTime currentDate = default)
         {
             DateTime date;
+            if (currentDate == default)
+                currentDate = DateTime.Now;
+
             while (true)
             {
                 Console.Write(message);
                 string entryDate = Console.ReadLine();
+
+                if (string.IsNullOrWhiteSpace(entryDate))
+                    return currentDate;
+
                 if (DateTime.TryParseExact(entryDate, "yyyy-MM-dd", null, DateTimeStyles.None, out date))
-                    break;
-                else
-                    Console.WriteLine("Neispravan format datuma!");
+                    return date;
+
+                else Console.WriteLine("Neispravan format datuma!");
             }
 
             return date;
@@ -146,10 +153,11 @@ namespace Internship_2_C_Sharp
             {
                 Console.Write(message);
                 string entryValue = Console.ReadLine();
+
                 if (double.TryParse(entryValue, NumberStyles.Any, CultureInfo.InvariantCulture, out value))
-                    break;
-                else
-                    Console.WriteLine("Neispravan unos. Trebate unijeti broj.");
+                    return value;
+
+                else Console.WriteLine("Neispravan unos. Trebate unijeti broj.");
             }
 
             return value;
@@ -168,13 +176,15 @@ namespace Internship_2_C_Sharp
                 if (addingTravel == "NE" || addingTravel == "N")
                 {
                     travelCheck = false;
-                    break;
+                    return travelCheck;
                 }
+
                 else if (addingTravel == "DA" || addingTravel == "D")
                 {
                     travelCheck = true;
-                    break;
+                    return travelCheck;
                 }
+
                 else Console.WriteLine("Morate upisati DA ili NE!");
             }
 
@@ -204,7 +214,7 @@ namespace Internship_2_C_Sharp
                             deleteUser(users);
                             break;
                         case 3:
-                            editUser();
+                            editUser(users);
                             break;
                         case 4:
                             showUsers(users);
@@ -226,13 +236,11 @@ namespace Internship_2_C_Sharp
                 int numberOfUsers = referenceUsers.Count;
                 int userID = numberOfUsers + 1;
 
-                Console.WriteLine($"ID unosenog elementa prije foreach {userID}");
                 foreach (var user in referenceUsers)
                 {
                     if (userID == user.Key)
                         userID++;
                 }
-                Console.WriteLine($"ID unosenog elementa {userID}");
 
                 Console.Write("Unesite ime: ");
                 string name = Console.ReadLine();
@@ -397,9 +405,42 @@ namespace Internship_2_C_Sharp
                 }
             }
 
-            void editUser()
+            void editUser(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> referenceUsers)
             {
-                Console.WriteLine("Uredivanje korisnika");
+                Console.Write("Unesite ID korisnika kojeg zelite urediti: ");
+                string nameOrID = Console.ReadLine();
+
+                if (int.TryParse(nameOrID, out int ID))
+                {
+                    if (referenceUsers.ContainsKey(ID))
+                    {
+                        var user = referenceUsers[ID];
+                        string name = user.Item1;
+                        string surname = user.Item2;
+                        DateTime birthDate = user.Item3;
+
+                        Console.WriteLine($"Ureduje se korisnik {ID} - {name} - {surname}");
+
+                        Console.Write($"Unesite novo ime (ENTER za zadržati '{name}'): ");
+                        string newName = Console.ReadLine();
+                        if (string.IsNullOrWhiteSpace(newName))
+                            newName = name;
+
+                        Console.Write($"Unesite novo ime (ENTER za zadržati '{surname}'): ");
+                        string newSurname = Console.ReadLine();
+                        if (string.IsNullOrWhiteSpace(newSurname))
+                            newSurname = surname;
+
+                        DateTime newBirthDate = entryAndCheckDate($"Unesite novi datum rodenja (YYYY-MM-DD) (ENTER za zadržati '{birthDate.ToString("yyyy-MM-dd")}'): ", birthDate);
+
+                        referenceUsers[ID] = new Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>(
+                            newName, newSurname, newBirthDate, user.Item4
+                            );
+                    }
+                    else Console.WriteLine("Korisnik ne postoji s tom vrijednosti ID-a!");
+                }
+
+                else Console.WriteLine("Korisnik ne postoji s tom vrijednosti ID-a!");
             }
 
             void showUsers(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> referenceUsers)
