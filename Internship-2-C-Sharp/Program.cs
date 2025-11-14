@@ -110,8 +110,6 @@ namespace Internship_2_C_Sharp
         static DateTime entryAndCheckDate(string message, DateTime currentDate = default)
         {
             DateTime date;
-            if (currentDate == default)
-                currentDate = DateTime.Now;
 
             while (true)
             {
@@ -124,24 +122,34 @@ namespace Internship_2_C_Sharp
                 if (DateTime.TryParseExact(entryDate, "yyyy-MM-dd", null, DateTimeStyles.None, out date))
                     return date;
 
-                else Console.WriteLine("Neispravan format datuma!");
+                else
+                {
+                    Console.WriteLine("Neispravan format datuma!");
+                    return currentDate;
+                }
             }
-
-            return date;
         }
 
-        static double entryAndCheckValue(string message)
+        static double entryAndCheckValue(string message, double currentValue = 0)
         {
             double value;
+
             while (true)
             {
                 Console.Write(message);
                 string entryValue = Console.ReadLine();
 
+                if (string.IsNullOrWhiteSpace(entryValue))
+                    return currentValue;
+
                 if (double.TryParse(entryValue, NumberStyles.Any, CultureInfo.InvariantCulture, out value))
                     return value;
 
-                else Console.WriteLine("Neispravan unos. Trebate unijeti broj.");
+                else
+                {
+                    Console.WriteLine("Neispravan format datuma!");
+                    return currentValue;
+                }
             }
 
             return value;
@@ -169,7 +177,11 @@ namespace Internship_2_C_Sharp
                     return travelCheck;
                 }
 
-                else Console.WriteLine("Morate upisati DA ili NE!");
+                else
+                {
+                    Console.WriteLine("Morate upisati DA ili NE!");
+                    return false;
+                }
             }
 
             return travelCheck;
@@ -645,9 +657,74 @@ namespace Internship_2_C_Sharp
                 else Console.WriteLine("Neispravan unos!");
             }
 
-            void deleteTravel(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> referenceUsers)
+            void editTravel(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> referenceUsers)
             {
+                Console.WriteLine("Odaberite ID korisnika kojem zelite urediti putovanje");
 
+                Console.WriteLine("KORISNICI:");
+                foreach (var user in referenceUsers)
+                {
+                    Console.WriteLine($"{user.Key} - {user.Value.Item1} - {user.Value.Item2} - {user.Value.Item3.ToString("yyyy-MM-dd")}");
+                }
+                Console.WriteLine("");
+
+                string userID = Console.ReadLine();
+
+                if (int.TryParse(userID, out int ID))
+                {
+                    if (referenceUsers.ContainsKey(ID))
+                    {
+                        var user = referenceUsers[ID];
+
+                        Console.WriteLine("Odaberite broj putovanja koje zelite urediti");
+
+                        var travels = user.Item4;
+                        foreach (var travel in travels)
+                        {
+                            Console.WriteLine($"Putovanje #{travel.Key}");
+                            Console.WriteLine($"Datum: {travel.Value.Item1.ToString("yyyy-MM-dd")}");
+                            Console.WriteLine($"Kilometri: {travel.Value.Item2}");
+                            Console.WriteLine($"Gorivo: {travel.Value.Item3} L");
+                            Console.WriteLine($"Cijena po litri: {travel.Value.Item4} EUR");
+                            Console.WriteLine($"Ukupno: {travel.Value.Item5} EUR");
+                            Console.WriteLine("");
+                        }
+
+                        Console.WriteLine("");
+
+                        string entryTravelID = Console.ReadLine();
+                        if (int.TryParse(entryTravelID, out int travelID))
+                        {
+                            if (travels.ContainsKey(travelID))
+                            {
+                                var travel = travels[travelID];
+
+                                DateTime travelDate = travel.Item1;
+                                double travelLength = travel.Item2;
+                                double fuelConsumed = travel.Item3;
+                                double pricePerLiter = travel.Item4;
+                                double totalCost = travel.Item5;
+
+                                DateTime newTravelDate = entryAndCheckDate($"Unesite novi datum putovanja (YYYY-MM-DD) (ENTER za zadržati '{travelDate.ToString("yyyy-MM-dd")}'): ", travelDate);
+                                double newTravelLength = entryAndCheckValue($"Unesite novu kilometrazu (ENTER za zadržati '{travelLength}'): ", travelLength);
+                                double newFuelConsumed = entryAndCheckValue($"Unesite novo potroseno gorivo (L) (ENTER za zadržati '{fuelConsumed}'): ", fuelConsumed);
+                                double newPricePerLiter = entryAndCheckValue($"Unesite novu cijenu po litri (ENTER za zadržati '{pricePerLiter}'): ", pricePerLiter);
+                                double newTotalCost = totalCost;
+
+                                if (newFuelConsumed != fuelConsumed || newPricePerLiter != pricePerLiter)
+                                    newTotalCost = newFuelConsumed * newPricePerLiter;
+
+                                travels[travelID] = new Tuple<DateTime, double, double, double, double>(
+                                    newTravelDate, newTravelLength, newFuelConsumed, newPricePerLiter, newTotalCost
+                                    );
+                            }
+                            else Console.WriteLine("Ne postoji putovanje s tim brojem!");
+                        }
+                        else Console.WriteLine("Neispravan unos!");
+                    }
+                    else Console.WriteLine("Korisnik ne postoji s tom vrijednosti ID-a!");
+                }
+                else Console.WriteLine("Neispravan unos!");
             }
 
             void showTravels(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> referenceUsers)
