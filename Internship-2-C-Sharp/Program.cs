@@ -648,7 +648,7 @@ namespace Internship_2_C_Sharp
                 else Console.WriteLine("Neispravan unos!");
             }
 
-            void showTravels(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> referenceUsers)
+            /*void showTravels(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> referenceUsers)
             {
                 Console.WriteLine("");
                 Console.WriteLine("Ispis svih putovanja svih korisnika");
@@ -827,7 +827,7 @@ namespace Internship_2_C_Sharp
                         Console.WriteLine("");
                     }
                 }
-            }
+            }*/
         }
 
         static void newTravel(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users)
@@ -970,6 +970,9 @@ namespace Internship_2_C_Sharp
             Console.WriteLine("");
             double cost = entryAndCheckValue("Unesite iznos: ");
 
+            if (!validation("Zelite li izbrisati putovanja (DA/NE): "))
+                return;
+
             foreach (var user in users)
             {
                 var travels = user.Value.Item4;
@@ -984,6 +987,18 @@ namespace Internship_2_C_Sharp
                 }
                 foreach (var travelKey in travelsToRemove)
                 {
+                    var travelToDelete = travels[travelKey];
+
+                    Console.WriteLine("Brise se sljedece putovanje!");
+                    Console.WriteLine("");
+                    Console.WriteLine($"Putovanje #{travelKey}");
+                    Console.WriteLine($"Datum: {travelToDelete.Item1.ToString("yyyy-MM-dd")}");
+                    Console.WriteLine($"Kilometri: {travelToDelete.Item2}");
+                    Console.WriteLine($"Gorivo: {travelToDelete.Item3} L");
+                    Console.WriteLine($"Cijena po litri: {travelToDelete.Item4} EUR");
+                    Console.WriteLine($"Ukupno: {travelToDelete.Item5} EUR");
+                    Console.WriteLine("");
+
                     travels.Remove(travelKey);
                 }
             }
@@ -993,6 +1008,9 @@ namespace Internship_2_C_Sharp
         {
             Console.WriteLine("");
             double cost = entryAndCheckValue("Unesite iznos: ");
+
+            if (!validation("Zelite li izbrisati putovanja (DA/NE): "))
+                return;
 
             foreach (var user in users)
             {
@@ -1008,6 +1026,18 @@ namespace Internship_2_C_Sharp
                 }
                 foreach (var travelKey in travelsToRemove)
                 {
+                    var travelToDelete = travels[travelKey];
+
+                    Console.WriteLine("Brise se sljedece putovanje!");
+                    Console.WriteLine("");
+                    Console.WriteLine($"Putovanje #{travelKey}");
+                    Console.WriteLine($"Datum: {travelToDelete.Item1.ToString("yyyy-MM-dd")}");
+                    Console.WriteLine($"Kilometri: {travelToDelete.Item2}");
+                    Console.WriteLine($"Gorivo: {travelToDelete.Item3} L");
+                    Console.WriteLine($"Cijena po litri: {travelToDelete.Item4} EUR");
+                    Console.WriteLine($"Ukupno: {travelToDelete.Item5} EUR");
+                    Console.WriteLine("");
+
                     travels.Remove(travelKey);
                 }
             }
@@ -1015,6 +1045,7 @@ namespace Internship_2_C_Sharp
 
         static void deleteTravel(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users)
         {
+            Console.WriteLine("");
             Console.WriteLine("a - Brisanje putovanja po ID-u");
             Console.WriteLine("b - Brisanje putovanja skupljih od unesenog iznosa");
             Console.WriteLine("c - Brisanje putovanja jeftinijih od unesenog iznosa");
@@ -1038,6 +1069,277 @@ namespace Internship_2_C_Sharp
                         break;
                 }
             }
+
+            Console.WriteLine("Pritisnite bilo koju tipku za nastavak...");
+            Console.ReadKey();
+
+            Console.WriteLine("");
+        }
+
+        static void showTravelesByUsers(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users)
+        {
+            Console.WriteLine("");
+            Console.WriteLine("Ispis svih putovanja svih korisnika");
+            Console.WriteLine("");
+
+            foreach (var user in users)
+            {
+                Console.WriteLine($"{user.Key} - {user.Value.Item1} - {user.Value.Item2} - {user.Value.Item3.ToString("yyyy-MM-dd")}");
+                Console.WriteLine("");
+
+                var travels = user.Value.Item4;
+                foreach (var travel in travels)
+                {
+                    Console.WriteLine($"Putovanje #{travel.Key}");
+                    Console.WriteLine($"Datum: {travel.Value.Item1.ToString("yyyy-MM-dd")}");
+                    Console.WriteLine($"Kilometri: {travel.Value.Item2}");
+                    Console.WriteLine($"Gorivo: {travel.Value.Item3} L");
+                    Console.WriteLine($"Cijena po litri: {travel.Value.Item4} EUR");
+                    Console.WriteLine($"Ukupno: {travel.Value.Item5} EUR");
+                    Console.WriteLine("");
+                }
+            }
+        }
+
+        static void showTravelsByCostAscending(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users)
+        {
+            Console.WriteLine("");
+            Console.WriteLine("Ispis putovanja sortirana po trošku uzlazno");
+            Console.WriteLine("");
+
+            List<KeyValuePair<int, Tuple<DateTime, double, double, double, double>>> allTravels = new List<KeyValuePair<int, Tuple<DateTime, double, double, double, double>>>();
+            foreach (var user in users)
+            {
+                var travels = user.Value.Item4;
+                foreach (var travel in travels)
+                {
+                    allTravels.Add(travel);
+                }
+            }
+
+            var travelsSorted = allTravels
+                            .OrderBy(totalCost => totalCost.Value.Item5)
+                            .ToList();
+
+            foreach (var travel in travelsSorted)
+            {
+                Console.WriteLine($"Putovanje #{travel.Key}");
+                Console.WriteLine($"Datum: {travel.Value.Item1.ToString("yyyy-MM-dd")}");
+                Console.WriteLine($"Kilometri: {travel.Value.Item2}");
+                Console.WriteLine($"Gorivo: {travel.Value.Item3} L");
+                Console.WriteLine($"Cijena po litri: {travel.Value.Item4} EUR");
+                Console.WriteLine($"Ukupno: {travel.Value.Item5} EUR");
+                Console.WriteLine("");
+            }
+        }
+
+        static void showTravelsByCostDescending(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users)
+        {
+            Console.WriteLine("");
+            Console.WriteLine("Ispis putovanja sortirana po trošku uzlazno");
+            Console.WriteLine("");
+
+            List<KeyValuePair<int, Tuple<DateTime, double, double, double, double>>> allTravels = new List<KeyValuePair<int, Tuple<DateTime, double, double, double, double>>>();
+            foreach (var user in users)
+            {
+                var travels = user.Value.Item4;
+                foreach (var travel in travels)
+                {
+                    allTravels.Add(travel);
+                }
+            }
+
+            var travelsSorted = allTravels
+                            .OrderByDescending(totalCost => totalCost.Value.Item5)
+                            .ToList();
+
+            foreach (var travel in travelsSorted)
+            {
+                Console.WriteLine($"Putovanje #{travel.Key}");
+                Console.WriteLine($"Datum: {travel.Value.Item1.ToString("yyyy-MM-dd")}");
+                Console.WriteLine($"Kilometri: {travel.Value.Item2}");
+                Console.WriteLine($"Gorivo: {travel.Value.Item3} L");
+                Console.WriteLine($"Cijena po litri: {travel.Value.Item4} EUR");
+                Console.WriteLine($"Ukupno: {travel.Value.Item5} EUR");
+                Console.WriteLine("");
+            }
+        }
+
+        static void showTravelsByLenghtAscending(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users)
+        {
+            Console.WriteLine("");
+            Console.WriteLine("Ispis putovanja sortirana po trošku uzlazno");
+            Console.WriteLine("");
+
+            List<KeyValuePair<int, Tuple<DateTime, double, double, double, double>>> allTravels = new List<KeyValuePair<int, Tuple<DateTime, double, double, double, double>>>();
+            foreach (var user in users)
+            {
+                var travels = user.Value.Item4;
+                foreach (var travel in travels)
+                {
+                    allTravels.Add(travel);
+                }
+            }
+
+            var travelsSorted = allTravels
+                            .OrderBy(travelLength => travelLength.Value.Item2)
+                            .ToList();
+
+            foreach (var travel in travelsSorted)
+            {
+                Console.WriteLine($"Putovanje #{travel.Key}");
+                Console.WriteLine($"Datum: {travel.Value.Item1.ToString("yyyy-MM-dd")}");
+                Console.WriteLine($"Kilometri: {travel.Value.Item2}");
+                Console.WriteLine($"Gorivo: {travel.Value.Item3} L");
+                Console.WriteLine($"Cijena po litri: {travel.Value.Item4} EUR");
+                Console.WriteLine($"Ukupno: {travel.Value.Item5} EUR");
+                Console.WriteLine("");
+            }
+        }
+
+        static void showTravelsByLenghtDescending(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users)
+        {
+            Console.WriteLine("");
+            Console.WriteLine("Ispis putovanja sortirana po trošku uzlazno");
+            Console.WriteLine("");
+
+            List<KeyValuePair<int, Tuple<DateTime, double, double, double, double>>> allTravels = new List<KeyValuePair<int, Tuple<DateTime, double, double, double, double>>>();
+            foreach (var user in users)
+            {
+                var travels = user.Value.Item4;
+                foreach (var travel in travels)
+                {
+                    allTravels.Add(travel);
+                }
+            }
+
+            var travelsSorted = allTravels
+                            .OrderByDescending(travelLength => travelLength.Value.Item2)
+                            .ToList();
+
+            foreach (var travel in travelsSorted)
+            {
+                Console.WriteLine($"Putovanje #{travel.Key}");
+                Console.WriteLine($"Datum: {travel.Value.Item1.ToString("yyyy-MM-dd")}");
+                Console.WriteLine($"Kilometri: {travel.Value.Item2}");
+                Console.WriteLine($"Gorivo: {travel.Value.Item3} L");
+                Console.WriteLine($"Cijena po litri: {travel.Value.Item4} EUR");
+                Console.WriteLine($"Ukupno: {travel.Value.Item5} EUR");
+                Console.WriteLine("");
+            }
+        }
+
+        static void showTravelsBydateAscending(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users)
+        {
+            Console.WriteLine("");
+            Console.WriteLine("Ispis putovanja sortirana po trošku uzlazno");
+            Console.WriteLine("");
+
+            List<KeyValuePair<int, Tuple<DateTime, double, double, double, double>>> allTravels = new List<KeyValuePair<int, Tuple<DateTime, double, double, double, double>>>();
+            foreach (var user in users)
+            {
+                var travels = user.Value.Item4;
+                foreach (var travel in travels)
+                {
+                    allTravels.Add(travel);
+                }
+            }
+
+            var travelsSorted = allTravels
+                            .OrderBy(travelLength => travelLength.Value.Item1)
+                            .ToList();
+
+            foreach (var travel in travelsSorted)
+            {
+                Console.WriteLine($"Putovanje #{travel.Key}");
+                Console.WriteLine($"Datum: {travel.Value.Item1.ToString("yyyy-MM-dd")}");
+                Console.WriteLine($"Kilometri: {travel.Value.Item2}");
+                Console.WriteLine($"Gorivo: {travel.Value.Item3} L");
+                Console.WriteLine($"Cijena po litri: {travel.Value.Item4} EUR");
+                Console.WriteLine($"Ukupno: {travel.Value.Item5} EUR");
+                Console.WriteLine("");
+            }
+        }
+
+        static void showTravelsBydateDescending(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users)
+        {
+            Console.WriteLine("");
+            Console.WriteLine("Ispis putovanja sortirana po trošku uzlazno");
+            Console.WriteLine("");
+
+            List<KeyValuePair<int, Tuple<DateTime, double, double, double, double>>> allTravels = new List<KeyValuePair<int, Tuple<DateTime, double, double, double, double>>>();
+            foreach (var user in users)
+            {
+                var travels = user.Value.Item4;
+                foreach (var travel in travels)
+                {
+                    allTravels.Add(travel);
+                }
+            }
+
+            var travelsSorted = allTravels
+                            .OrderByDescending(travelLength => travelLength.Value.Item1)
+                            .ToList();
+
+            foreach (var travel in travelsSorted)
+            {
+                Console.WriteLine($"Putovanje #{travel.Key}");
+                Console.WriteLine($"Datum: {travel.Value.Item1.ToString("yyyy-MM-dd")}");
+                Console.WriteLine($"Kilometri: {travel.Value.Item2}");
+                Console.WriteLine($"Gorivo: {travel.Value.Item3} L");
+                Console.WriteLine($"Cijena po litri: {travel.Value.Item4} EUR");
+                Console.WriteLine($"Ukupno: {travel.Value.Item5} EUR");
+                Console.WriteLine("");
+            }
+        }
+
+        static void showTravels(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users)
+        {
+            Console.WriteLine("");
+            Console.WriteLine("a - Sva putovanja po korisnicima");
+            Console.WriteLine("b - Sva putovanja sortirana po trošku uzlazno");
+            Console.WriteLine("c - Sva putovanja sortirana po trošku silazno");
+            Console.WriteLine("d - Sva putovanja sortirana po kilometraži uzlazno");
+            Console.WriteLine("e - Sva putovanja sortirana po kilometraži silazno");
+            Console.WriteLine("f - Sva putovanja sortirana po datumu uzlazno");
+            Console.WriteLine("g - Sva putovanja sortirana po datumu silazno");
+            Console.Write("\nOdabir: ");
+            string input = Console.ReadLine().ToLower();
+            if (char.TryParse(input, out char userChoice))
+            {
+                switch (userChoice)
+                {
+                    case 'a':
+                        showTravelesByUsers(users);
+                        break;
+                    case 'b':
+                        showTravelsByCostAscending(users);
+                        break;
+                    case 'c':
+                        showTravelsByCostDescending(users);
+                        break;
+                    case 'd':
+                        showTravelsByLenghtAscending(users);
+                        break;
+                    case 'e':
+                        showTravelsByLenghtDescending(users);
+                        break;
+                    case 'f':
+                        showTravelsBydateAscending(users);
+                        break;
+                    case 'g':
+                        showTravelsBydateDescending(users);
+                        break;
+                    default:
+                        Console.WriteLine("Krivi odabir!");
+                        break;
+                }
+            }
+
+            Console.WriteLine("Pritisnite bilo koju tipku za nastavak...");
+            Console.ReadKey();
+
+            Console.WriteLine("");
         }
     }
 }
