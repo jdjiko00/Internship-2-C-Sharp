@@ -126,12 +126,19 @@ namespace Internship_2_C_Sharp
                     return currentDate;
 
                 if (DateTime.TryParseExact(entryDate, "yyyy-MM-dd", null, DateTimeStyles.None, out date))
-                    return date;
+                {
+                    if (date > DateTime.Now)
+                    {
+                        Console.WriteLine("Neispravan unos datuma!");
+                        continue;
+                    }
+                    else return date;
+                }
 
                 else
                 {
                     Console.WriteLine("Neispravan format datuma!");
-                    return currentDate;
+                    continue;
                 }
             }
         }
@@ -149,12 +156,19 @@ namespace Internship_2_C_Sharp
                     return currentValue;
 
                 if (double.TryParse(entryValue, NumberStyles.Any, CultureInfo.InvariantCulture, out value))
-                    return value;
+                {
+                    if (value < 0)
+                    {
+                        Console.WriteLine("Nije moguce unijeti negativnu vrijednost!");
+                        continue;
+                    }
+                    else return value;
+                }
 
                 else
                 {
-                    Console.WriteLine("Neispravan format datuma!");
-                    return currentValue;
+                    Console.WriteLine("Neispravan unos!");
+                    continue;
                 }
             }
         }
@@ -184,7 +198,7 @@ namespace Internship_2_C_Sharp
                 else
                 {
                     Console.WriteLine("Morate upisati DA ili NE!");
-                    return false;
+                    continue;
                 }
             }
         }
@@ -235,8 +249,6 @@ namespace Internship_2_C_Sharp
         static void addingUser(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users, int userID)
         {
             Console.WriteLine("");
-            if (!validation("Zelite li dodati korisnika (DA/NE): "))
-                return;
 
             Console.Write("Unesite ime: ");
             string name = Console.ReadLine();
@@ -248,14 +260,18 @@ namespace Internship_2_C_Sharp
 
             bool travelCheck = validation("Zelite li unijeti putovanje (DA/NE): ");
 
-            var travel = new Dictionary<int, Tuple<DateTime, double, double, double, double>>();
+            var travels = new Dictionary<int, Tuple<DateTime, double, double, double, double>>();
             int travelID = 1;
 
-            travel = addingTravels(travel, travelID, travelCheck);
+            travels = addingTravels(travels, travelID, travelCheck);
 
             users.Add(userID, new Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>(
-                    name, surname, birthDate, travel
+                    name, surname, birthDate, travels
                 ));
+
+            Console.WriteLine($"Unesen korisnik: {userID} - {name} - {surname} - {birthDate.ToString("yyyy-MM-dd")}");
+
+            Console.WriteLine("");
         }
 
         static void newUser(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users)
@@ -282,15 +298,17 @@ namespace Internship_2_C_Sharp
         static void deletingUser(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users, int userID)
         {
             Console.WriteLine("");
-            if (!validation("Zelite li izbrisati korisnika (DA/NE): "))
-                return;
 
             var user = users[userID];
             string name = user.Item1;
             string surname = user.Item2;
 
+            if (!validation($"Zelite li izbrisati korisnika {userID} - {name} - {surname} (DA/NE): "))
+                return;
+
             users.Remove(userID);
 
+            Console.WriteLine("");
             Console.WriteLine($"Izbrisan je korisnik {userID} - {name} - {surname}");
 
             Console.WriteLine("");
@@ -343,12 +361,19 @@ namespace Internship_2_C_Sharp
                 {
                     deletingUser(users, deletedUserID);
 
+                    Console.WriteLine("Pritisnite bilo koju tipku za nastavak...");
+                    Console.ReadKey();
+
+                    Console.WriteLine("");
+
                     return;
                 }
 
                 if (matchingUser.Count == 0)
                 {
+                    Console.WriteLine("");
                     Console.WriteLine("Ne postoji korisnik koji ima to ime!");
+                    Console.WriteLine("");
                 }
 
                 else if (matchingUser.Count == 1)
@@ -361,9 +386,11 @@ namespace Internship_2_C_Sharp
                     Console.WriteLine($"{userID} - {name} - {surname}");
                     Console.WriteLine("");
                     Console.WriteLine("Jeste li mislili na ovog korisnika? Ako da, upisite njegov ID");
+                    Console.WriteLine("");
 
                     Console.Write("Unos ID-a: ");
                     string inputID = Console.ReadLine();
+                    Console.WriteLine("");
                     if (int.TryParse(inputID, out int userIDToDelete))
                     {
                         if (userIDToDelete == userID)
@@ -373,6 +400,8 @@ namespace Internship_2_C_Sharp
                         else Console.WriteLine("To nije ID od korisnika!");
                     }
                     else Console.WriteLine("To nije ID od korisnika!");
+
+                    Console.WriteLine("");
                 }
 
                 else
@@ -413,14 +442,15 @@ namespace Internship_2_C_Sharp
         static void editingUser(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users, int userID)
         {
             Console.WriteLine("");
-            if (!validation("Zelite li urediti korisnika (DA/NE): "))
-                return;
 
             var user = users[userID];
             string name = user.Item1;
             string surname = user.Item2;
             DateTime birthDate = user.Item3;
             var travels = user.Item4;
+
+            if (!validation($"Zelite li urediti korisnika {userID} - {name} - {surname} (DA/NE): "))
+                return;
 
             Console.WriteLine("");
             Console.WriteLine($"Ureduje se korisnik {userID} - {name} - {surname}");
@@ -442,6 +472,9 @@ namespace Internship_2_C_Sharp
                 );
 
             Console.WriteLine("");
+            Console.WriteLine($"Uredio se korisnik {userID} - {name} - {surname}");
+
+            Console.WriteLine("");
         }
 
         static void editUser(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users)
@@ -456,6 +489,7 @@ namespace Internship_2_C_Sharp
                 if (users.ContainsKey(userID))
                 {
                     editingUser(users, userID);
+                    Console.WriteLine("");
                 }
                 else Console.WriteLine("Korisnik ne postoji s tom vrijednosti ID-a!");
             }
@@ -557,10 +591,16 @@ namespace Internship_2_C_Sharp
             Console.WriteLine("");
         }
 
-        static Dictionary<int, Tuple<DateTime, double, double, double, double>> addingTravels(Dictionary<int, Tuple<DateTime, double, double, double, double>> travel, int travelID, bool travelCheck)
+        static Dictionary<int, Tuple<DateTime, double, double, double, double>> addingTravels(Dictionary<int, Tuple<DateTime, double, double, double, double>> travels, int travelID, bool travelCheck)
         {
             while (travelCheck)
             {
+                foreach (var travel in travels)
+                {
+                    if (travelID == travel.Key)
+                        travelID++;
+                }
+
                 DateTime travelDate = entryAndCheckDate("Unesite datum putovanja (YYYY-MM-DD): ");
 
                 double travelLength = entryAndCheckValue("Unesite kilometrazu: ");
@@ -571,7 +611,7 @@ namespace Internship_2_C_Sharp
 
                 double totalCost = fuelConsumed * pricePerLiter;
 
-                travel.Add(travelID, new Tuple<DateTime, double, double, double, double>(travelDate, travelLength, fuelConsumed, pricePerLiter, totalCost));
+                travels.Add(travelID, new Tuple<DateTime, double, double, double, double>(travelDate, travelLength, fuelConsumed, pricePerLiter, totalCost));
 
                 Console.WriteLine("");
                 travelCheck = validation("Zelite li unijeti jos jedno putovanje (DA/NE): ");
@@ -582,7 +622,7 @@ namespace Internship_2_C_Sharp
 
             Console.WriteLine("");
 
-            return travel;
+            return travels;
         }
 
         static void travelApp(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users)
@@ -699,6 +739,7 @@ namespace Internship_2_C_Sharp
             if (!validation("Zelite li izbrisati putovanje (DA/NE): "))
                 return;
 
+            Console.WriteLine("");
             if (int.TryParse(inputTravelID, out int travelID))
             {
                 if (travels.ContainsKey(travelID))
@@ -718,6 +759,7 @@ namespace Internship_2_C_Sharp
                     travels.Remove(travelID);
                 }
                 else Console.WriteLine("Ne postoji putovanje s tim brojem!");
+                Console.WriteLine("");
             }
             else Console.WriteLine("Neispravan unos!");
         }
