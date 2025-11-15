@@ -607,7 +607,7 @@ namespace Internship_2_C_Sharp
                             showTravels(users);
                             break;
                         case 5:
-                            //reportsAndAnalyses();
+                            reportsAndAnalyses(users);
                             break;
                         case 0:
                             Console.WriteLine("Izlazak iz aplkacije za putovanja...");
@@ -1134,10 +1134,8 @@ namespace Internship_2_C_Sharp
             Console.WriteLine("");
         }
 
-        static void editingTravel(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users, int userID)
+        static void editingTravel(Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>> user)
         {
-            var user = users[userID];
-
             Console.WriteLine("Odaberite broj putovanja koje zelite urediti");
             Console.WriteLine("");
 
@@ -1213,11 +1211,170 @@ namespace Internship_2_C_Sharp
             {
                 if (users.ContainsKey(userID))
                 {
-                    editingTravel(users, userID);
+                    var user = users[userID];
+                    editingTravel(user);
                 }
                 else Console.WriteLine("Korisnik ne postoji s tom vrijednosti ID-a!");
             }
             else Console.WriteLine("Neispravan unos!");
+
+            Console.WriteLine("");
+            Console.WriteLine("Pritisnite bilo koju tipku za nastavak...");
+            Console.ReadKey();
+
+            Console.WriteLine("");
+        }
+
+        static void showReportsAndAnalysesTotalFuelConsumed(Dictionary<int, Tuple<DateTime, double, double, double, double>> travels)
+        {
+            Console.WriteLine("");
+            double totalFuelConsumed = 0;
+
+            foreach (var travel in travels)
+            {
+                totalFuelConsumed += travel.Value.Item3;
+            }
+
+            Console.WriteLine($"Ukupna potrosnja goriva je: {totalFuelConsumed}");
+        }
+
+        static void showReportsAndAnalysesTotalCost(Dictionary<int, Tuple<DateTime, double, double, double, double>> travels)
+        {
+            Console.WriteLine("");
+            double totalCost = 0;
+
+            foreach (var travel in travels)
+            {
+                totalCost += travel.Value.Item5;
+            }
+
+            Console.WriteLine($"Ukupni troskovi goriva je: {totalCost}");
+        }
+
+        static void showReportsAndAnalysesAverageFuelConsumed(Dictionary<int, Tuple<DateTime, double, double, double, double>> travels)
+        {
+            Console.WriteLine("");
+            double totalFuelConsumed = 0;
+            double totalLenght = 0;
+            double average = 0;
+
+            foreach (var travel in travels)
+            {
+                totalFuelConsumed += travel.Value.Item3;
+                totalLenght += travel.Value.Item2;
+            }
+
+            average = (totalFuelConsumed * totalLenght)/100;
+
+            Console.WriteLine($"Prosjecna potrosnja goriva je: {average}");
+        }
+
+        static void showReportsAndAnalysesMostFuelConsumed(Dictionary<int, Tuple<DateTime, double, double, double, double>> travels)
+        {
+            Console.WriteLine("");
+            var travelsSorted = travels
+                            .OrderByDescending(fuelConsumed => fuelConsumed.Value.Item3)
+                            .ToList();
+
+            double mostFuelConsumed = travelsSorted.First().Value.Item3;
+            int numOfTravel = travelsSorted.First().Key;
+
+            Console.WriteLine($"Putovanje s najvecom potrosnjom goriva je {numOfTravel} i potroseno je  {mostFuelConsumed} L");
+        }
+
+        static void showReportsAndAnalysesByDate(Dictionary<int, Tuple<DateTime, double, double, double, double>> travels)
+        {
+            Console.WriteLine("");
+            DateTime requestedDate = entryAndCheckDate("Unesite datum putovanja koje vas zanima (YYYY-MM-DD): ");
+            Console.WriteLine("");
+            bool dateMatches = false;
+
+            foreach (var travel in travels)
+            {
+                DateTime dateOfTravel = travel.Value.Item1;
+                if (requestedDate == dateOfTravel)
+                {
+                    Console.WriteLine($"Putovanje #{travel.Key}");
+                    Console.WriteLine($"Datum: {travel.Value.Item1.ToString("yyyy-MM-dd")}");
+                    Console.WriteLine($"Kilometri: {travel.Value.Item2}");
+                    Console.WriteLine($"Gorivo: {travel.Value.Item3} L");
+                    Console.WriteLine($"Cijena po litri: {travel.Value.Item4} EUR");
+                    Console.WriteLine($"Ukupno: {travel.Value.Item5} EUR");
+                    Console.WriteLine("");
+
+                    dateMatches = true;
+                }
+            }
+
+            if (!dateMatches)
+            {
+                Console.WriteLine("Nema putovanja s tim datumom!");
+                Console.WriteLine("");
+            }
+        }
+
+        static void showReportsAndAnalyses(Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>> user)
+        {
+            Console.WriteLine("");
+            Console.WriteLine("a - Ukupna potrosnja goriva");
+            Console.WriteLine("b - Ukupni troskovi goriva");
+            Console.WriteLine("c - Prosjecna potrosnja goriva u L/100 km");
+            Console.WriteLine("d - Putovanje s najvecom potrosnjom goriva");
+            Console.WriteLine("e - Pregled putovanja po odredenom datumu");
+            Console.Write("\nOdabir: ");
+            string input = Console.ReadLine().ToLower();
+            if (char.TryParse(input, out char userChoice))
+            {
+                var travels = user.Item4;
+                switch (userChoice)
+                {
+                    case 'a':
+                        showReportsAndAnalysesTotalFuelConsumed(travels);
+                        break;
+                    case 'b':
+                        showReportsAndAnalysesTotalCost(travels);
+                        break;
+                    case 'c':
+                        showReportsAndAnalysesAverageFuelConsumed(travels);
+                        break;
+                    case 'd':
+                        showReportsAndAnalysesMostFuelConsumed(travels);
+                        break;
+                    case 'e':
+                        showReportsAndAnalysesByDate(travels);
+                        break;
+                    default:
+                        Console.WriteLine("Krivi odabir!");
+                        break;
+                }
+            }
+        }
+
+        static void reportsAndAnalyses(Dictionary<int, Tuple<string, string, DateTime, Dictionary<int, Tuple<DateTime, double, double, double, double>>>> users)
+        {
+            Console.WriteLine("");
+            Console.WriteLine("Odaberite ID korisnika kojem zelite vidjeti izvjestaj i analizu");
+            Console.WriteLine("");
+
+            Console.WriteLine("KORISNICI:");
+            foreach (var user in users)
+            {
+                Console.WriteLine($"{user.Key} - {user.Value.Item1} - {user.Value.Item2} - {user.Value.Item3.ToString("yyyy-MM-dd")}");
+            }
+            Console.WriteLine("");
+
+            Console.Write("Odabir: ");
+            string inputID = Console.ReadLine();
+            Console.WriteLine("");
+
+            if (int.TryParse(inputID, out int userID))
+            {
+                if (users.ContainsKey(userID))
+                {
+                    var user = users[userID];
+                    showReportsAndAnalyses(user);
+                }
+            }
 
             Console.WriteLine("");
             Console.WriteLine("Pritisnite bilo koju tipku za nastavak...");
